@@ -29,6 +29,6 @@ vim.o.signcolumn = "yes"
 
 vim.o.updatetime = 120
 
-vim.o.colorcolumn = "80"
+vim.o.colorcolumn = "100"
 
 
