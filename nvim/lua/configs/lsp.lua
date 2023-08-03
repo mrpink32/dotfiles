@@ -1,3 +1,16 @@
+-- client_id = vim.lsp.start({
+--   name = 'rust',
+--   cmd = {'rust-analyzer'},
+--   root_dir = vim.fs.dirname(vim.fs.find({"Cargo.toml"}, { upward = true })[1]),
+-- })
+-- 
+-- if client_id then
+--     vim.print("test")
+-- else
+--     vim.print("grim")
+-- end
+-- vim.print(client_id)
+
 local lsp = require('lsp-zero')
 
 lsp.preset('recommended')
@@ -5,6 +18,7 @@ lsp.preset('recommended')
 lsp.ensure_installed({
     'rust_analyzer',
     'pyright',
+    "bicep",
     'html',
     'cssls',
     'jsonls',
@@ -13,18 +27,19 @@ lsp.ensure_installed({
     'clangd',
     'lua_ls',
     'tsserver',
+    "gopls",
 })
 
 -- Fix Undefined global 'vim'
-lsp.configure('lua-language-server', {
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = { 'vim' }
-            }
-        }
-    }
-})
+-- lsp.configure('lua-ls', {
+--     settings = {
+--         Lua = {
+--             diagnostics = {
+--                 globals = { 'vim' }
+--             }
+--         }
+--     }
+-- })
 
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}

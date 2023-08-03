@@ -62,6 +62,8 @@ vim.keymap.set('i', '<C-,>', function() return vim.fn['codeium#CycleCompletions'
 vim.keymap.set('i', '<C-x>', function() return vim.fn['codeium#Clear']() end, { expr = true })
 vim.keymap.set('i', '<C-Bslash>', function() return vim.fn['codeium#Complete']() end, { expr = true })
 
+
+
 -- Telescope
 local status, telescope = pcall(require, "telescope.builtin")
 if status then

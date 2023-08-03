@@ -84,11 +84,6 @@ _G.packer_plugins = {
     path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp",
     url = "https://github.com/hrsh7th/cmp-nvim-lsp"
   },
-  ["codeium.vim"] = {
-    loaded = true,
-    path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/codeium.vim",
-    url = "https://github.com/Exafunction/codeium.vim"
-  },
   harpoon = {
     loaded = true,
     path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/harpoon",
@@ -114,16 +109,6 @@ _G.packer_plugins = {
     path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/mason.nvim",
     url = "https://github.com/williamboman/mason.nvim"
   },
-  ["neo-tree.nvim"] = {
-    loaded = true,
-    path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/neo-tree.nvim",
-    url = "https://github.com/nvim-neo-tree/neo-tree.nvim"
-  },
-  ["nui.nvim"] = {
-    loaded = true,
-    path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/nui.nvim",
-    url = "https://github.com/MunifTanjim/nui.nvim"
-  },
   ["nvim-cmp"] = {
     loaded = true,
     path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/nvim-cmp",
@@ -140,8 +125,9 @@ _G.packer_plugins = {
     url = "https://github.com/nvim-treesitter/nvim-treesitter"
   },
   ["nvim-web-devicons"] = {
-    loaded = true,
-    path = "/home/mikkel/.local/share/nvim/site/pack/packer/start/nvim-web-devicons",
+    loaded = false,
+    needs_bufread = false,
+    path = "/home/mikkel/.local/share/nvim/site/pack/packer/opt/nvim-web-devicons",
     url = "https://github.com/nvim-tree/nvim-web-devicons"
   },
   ["packer.nvim"] = {

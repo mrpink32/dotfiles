@@ -8,9 +8,9 @@ pacman -Rncsu discover
 pacman -Rncsu konsole
 pacman -Rncsu kate
 pacman -Rncsu kwrited
-pacman -S --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader --noconfirm
-pacman -S --needed lib32-mesa vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader --noconfirm
-pacman -S alacritty neovim flatpak --noconfirm
+pacman -S --needed nvidia-open-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader --noconfirm
+# pacman -S --needed lib32-mesa vulkan-radeon lib32-vulkan-radeon --noconfirm
+pacman -S alacritty neovim flatpak noto-fonts-cjk ttf-noto-nerd ttf-jetbrains-mono ttf-jetbrains-mono-nerd --noconfirm
 flatpak install flathub io.gitlab.librewolf-community
 pacman -S clang rustup zig zls go jdk-openjdk --noconfirm
 pacman -S steam lutris --noconfirm

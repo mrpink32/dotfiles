@@ -31,4 +31,11 @@ vim.o.updatetime = 120
 
 vim.o.colorcolumn = "100"
 
+vim.o.winbl = 30
 
+vim.o.mouse = ""
+vim.o.mousehide = true
+vim.o.mousescroll = "ver:10,hor:0"
+
+vim.o.cursorline = true
+vim.o.cursorlineopt = "both"

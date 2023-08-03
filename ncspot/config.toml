@@ -1,18 +1,68 @@
-[theme]
-background = "#00000000"
-primary = "#000000"
-secondary = "#000000"
-title = "#000000"
-playing = "#ff8000"
-playing_selected = "light green"
-playing_bg = "#804000"
-highlight = "#ffffff"
-highlight_bg = "#000000"
-error = "light white"
+command_key = ":" # key to open command line. Default: ":" ["single char"]
+initial_screen = "library" # Screen to show after startup. Default: "library" ["library", "search", "queue", "cover"]
+use_nerdfont = true # Turn nerdfont glyphs on/off. Default: false [true, false]
+flip_status_indicators = true # Reverse play/pause icon. Default: false [true, false]
+# backend = ? # Audio backend to use. Default: ? [string]
+# backend_device = ? # Audio device to configure the backend. Default: ? [string]
+audio_cache = true # Enable/disable caching of audio files. Default: true [true, false]
+# audio_cache_size = ? # Maximum size of audio cache in MiB. Default: ? [any reasonable number]
+volnorm = false # Enable/disable volume normalization. Default false [true, false]
+volnorm_pregain = 0.0 # Normalization pregain to apply in dB (if enabled). Default: 0.0 [any reasonable figure]
+default_keybindings = true # Enable/disable default keybindings. Default: true [true, false]
+notify = true # Enable/disable desktop notifications. Default: false [true, false]
+bitrate = 320 # Audio bitrate to use for streaming. Default: 320 [96, 160, 320]
+gapless = true # Enable/disable gapless playback. Default: true [true, false]
+shuffle = false # Set default shuffle state. Default false [true, false]
+repeat = "off" # Set default repeat state. Default: "off" ["off", "track", "playlist"]
+playback_state = "Paused" # Set default playback state. Default: "Paused" ["Stopped", "Paused", "Playing", "Default"]
+library_tabs = ["tracks", "albums", "artists", "playlists", "podcasts", "browse"] # Tabs to show in library screen. Default: all tabs ["tracks", "albums", "artists", "playlists", "podcasts", "browse"]
+cover_max_scale = 1.0 # Set maximum scalling ratio for cover art. Default: 1.0 [any reasonable figure]
+hide_display_names = false # Hides spotify usernames in the library header and on playlists. Default: false [true, false]
+statusbar_format = "%artists - %title" # Formatting for tracks in the statusbar. Default: "%artists - %title"
+[track_format] # Set active fields shown in Library/Queue views.
+left = "%artists - %title"
+center = "%album"
+right = "%saved %duration"
+[notification_format] # Set the text displayed in notifications.
+title = "%title"
+body = "%artists"
+[theme] # Custom theme
+# --- Dunno colors --- #
+# background = "#00000000"
+# primary = "#000000"
+# secondary = "#000000"
+# title = "#000000"
+# playing = "#ff8000"
+# playing_selected = "light green"
+# playing_bg = "#804000"
+# highlight = "#ffffff"
+# highlight_bg = "#000000"
+# error = "light white"
+# error_bg = "red"
+# statusbar = "#000000"
+# statusbar_progress = "#ff8000"
+# statusbar_bg = "#ffffff"
+# cmdline = "light white"
+# cmdline_bg = "black"
+# search_match = "light red"
+# --- Spotify colors --- #
+background = "#191414"
+primary = "#FFFFFF"
+secondary = "light black"
+title = "#1DB954"
+playing = "#1DB954"
+playing_selected = "#1ED760"
+playing_bg = "#191414"
+highlight = "#FFFFFF"
+highlight_bg = "#484848"
+error = "#FFFFFF"
 error_bg = "red"
-statusbar = "#000000"
-statusbar_progress = "#ff8000"
-statusbar_bg = "#ffffff"
-cmdline = "light white"
-cmdline_bg = "black"
+statusbar = "#191414"
+statusbar_progress = "#1DB954"
+statusbar_bg = "#1DB954"
+cmdline = "#FFFFFF"
+cmdline_bg = "#191414"
 search_match = "light red"
+[keybindings] # Custom keybindings
+# "Shift+q" = "quit"
+# "q" = "noop"

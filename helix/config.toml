@@ -1,0 +1,12 @@
+theme = "ayu_light"
+
+[editor]
+scrolloff = 10
+mouse = false
+line-number = "relative"
+auto-format = true
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
