@@ -35,16 +35,16 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
 
 -- harpoon
-local mark = require('harpoon.mark')
-local ui = require('harpoon.ui')
-
-vim.keymap.set('n', '<leader>a', mark.add_file)
-vim.keymap.set('n', '<C-e>', ui.toggle_quick_menu)
-
-vim.keymap.set('n', '<C-h>', function() ui.nav_file(1) end)
-vim.keymap.set('n', '<C-t>', function() ui.nav_file(2) end)
-vim.keymap.set('n', '<C-n>', function() ui.nav_file(3) end)
-vim.keymap.set('n', '<C-s>', function() ui.nav_file(4) end)
+-- local mark = require('harpoon.mark')
+-- local ui = require('harpoon.ui')
+-- 
+-- vim.keymap.set('n', '<leader>a', mark.add_file)
+-- vim.keymap.set('n', '<C-e>', ui.toggle_quick_menu)
+-- 
+-- vim.keymap.set('n', '<C-h>', function() ui.nav_file(1) end)
+-- vim.keymap.set('n', '<C-t>', function() ui.nav_file(2) end)
+-- vim.keymap.set('n', '<C-n>', function() ui.nav_file(3) end)
+-- vim.keymap.set('n', '<C-s>', function() ui.nav_file(4) end)
 
 
 
@@ -56,11 +56,11 @@ vim.o.timeoutlen = 300
 
 -- codeium
 -- Change '<C-g>' here to any keycode you like.
-vim.keymap.set('i', '<C-g>', function () return vim.fn['codeium#Accept']() end, { expr = true })
-vim.keymap.set('i', '<C-;>', function() return vim.fn['codeium#CycleCompletions'](1) end, { expr = true })
-vim.keymap.set('i', '<C-,>', function() return vim.fn['codeium#CycleCompletions'](-1) end, { expr = true })
-vim.keymap.set('i', '<C-x>', function() return vim.fn['codeium#Clear']() end, { expr = true })
-vim.keymap.set('i', '<C-Bslash>', function() return vim.fn['codeium#Complete']() end, { expr = true })
+-- vim.keymap.set('i', '<C-g>', function () return vim.fn['codeium#Accept']() end, { expr = true })
+-- vim.keymap.set('i', '<C-;>', function() return vim.fn['codeium#CycleCompletions'](1) end, { expr = true })
+-- vim.keymap.set('i', '<C-,>', function() return vim.fn['codeium#CycleCompletions'](-1) end, { expr = true })
+-- vim.keymap.set('i', '<C-x>', function() return vim.fn['codeium#Clear']() end, { expr = true })
+-- vim.keymap.set('i', '<C-Bslash>', function() return vim.fn['codeium#Complete']() end, { expr = true })
 
 
 

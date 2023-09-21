@@ -1,6 +1,5 @@
 vim.g.mapleader = ' '
 
-
 vim.o.number = true
 vim.o.relativenumber = true
 
@@ -23,19 +22,20 @@ vim.o.incsearch = true
 
 vim.o.termguicolors = true
 
-vim.o.scrolloff = 10
-vim.o.sidescrolloff = 10
+vim.o.scrolloff = 12
+vim.o.sidescrolloff = 12
 vim.o.signcolumn = "yes"
 
 vim.o.updatetime = 120
 
-vim.o.colorcolumn = "100"
+vim.o.colorcolumn = "80"
 
 vim.o.winbl = 30
 
 vim.o.mouse = ""
 vim.o.mousehide = true
-vim.o.mousescroll = "ver:10,hor:0"
+vim.o.mousescroll = "ver:0,hor:0"
 
 vim.o.cursorline = true
+vim.o.cursorcolumn = true
 vim.o.cursorlineopt = "both"

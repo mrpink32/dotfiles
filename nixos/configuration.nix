@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports =
@@ -13,7 +13,9 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  
+  boot.initrd.kernelModules = [ "nvidia" ]; # "amdgpu"
+  boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
+
   # Make sure opengl is enabled
   hardware.opengl = {
     enable = true;
@@ -21,8 +23,15 @@
     driSupport32Bit = true;
   };
 
+  # Tell Xorg to use the nvidia driver (also valid for Wayland)
+  services.xserver.videoDrivers = [
+    "nvidia"
+    "amdgpu"
+  ];
+
   hardware.nvidia = {
-    # Modesetting is needed for most wayland compositors
+
+    # Modesetting is needed for most Wayland compositors
     modesetting.enable = true;
 
     # Use the open source version of the kernel module
@@ -33,8 +42,15 @@
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
+  
+  hardware.enableAllFirmware = true;
+
+  hardware.nvidia.powerManagement.enable = true;
+  # hardware.nvidia.powerManagement.finegrained = true;
+
+  # boot.kernelParams = [ "module_blacklist=amdgpu" ];
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -64,47 +80,46 @@
     LC_TIME = "ja_JP.UTF-8";
   };
 
+  fileSystems."/mnt/data" = { 
+    device = "/dev/disk/by-partuuid/0115fc15-0f38-1d45-be7b-c5c3d3ef13da";
+    fsType = "btrfs";
+  };
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.autorun = true;
 
   # Enable the KDE Plasma Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
   # services.xserver.windowManager.openbox.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
-  services.xserver.displayManager.defaultSession = "plasmawayland";
+  # services.xserver.desktopManager.plasma5.enable = true;
+  # services.xserver.displayManager.defaultSession = "plasmawayland";
 
-  # services.xserver = {
-  #   desktopManager = {
-  #     xterm.enable = false;
-  #     xfce.enable = true;
-  #   };
-  #   displayManager.defaultSession = "xfce";
-  # };
-
-  environment.plasma5.excludePackages = with pkgs.libsForQt5; [
-  #  elisa
-  #  gwenview
-  #  okular
-  #  oxygen
-  #  khelpcenter
-    konsole
-    plasma-browser-integration
-  #  print-manager
-    kwrited
-  ];
+  # Enable supergfxd power daemon
+  services.supergfxd.enable = true;
+  systemd.services.supergfxd.path = [ pkgs.pciutils ];
+  services.asusd = {
+    enable = true;
+    enableUserService = true;
+  };
 
   # Configure keymap in X11
   services.xserver = {
     layout = "us";
-    xkbVariant = "";
+    xkbVariant = "dvorak";
+    xkbOptions = caps:backspace;
   };
+
+  # Configure console keymap
+  console.keyMap = "dvorak";
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
+
+  #***** Apparently not the correct way to enable pipewire https://nixos.wiki/wiki/PipeWire *****
   # Enable sound with pipewire.
-  sound.enable = true;
+  # sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -113,7 +128,7 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -121,100 +136,180 @@
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
+  services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.mikkel = {
     isNormalUser = true;
     description = "mikkel";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-    #  firefox
-    #  kate
-    #  thunderbird
-    ];
   };
-  
-  # Enable flatpak
-  services.flatpak.enable = true;
-  
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-  
+
+  # Enable flatpak
+  # services.flatpak.enable = true;
+
+  # 
+  xdg.portal.extraPortals = [
+    pkgs.xdg-desktop-portal-gtk
+    pkgs.xdg-dbus-proxy
+  ];
+
+  # enable nix experimental features
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    # 
+    vim
     alacritty
     neovim
     git
+    git-doc
+    man
     wget
-    vscode
-    steam
-    lutris
-    lf
-    ntfs3g
+    wezterm
+
+    # programming langs
+    lld_16
+    clang_16
+    llvm_16
+    lldb_16
+    libllvm
+    gcc
+    rustup
+    zig
+    go
     jdk20
     jdk
-    go
-    zig
-    zls
-    rustup
-    ncspot
-    typescript
-    gcc
-    clang_16
-    dotnet-sdk_8
+    jdk17
+    jdk11
     dotnet-sdk_7
-    unityhub
-    jetbrains-mono
-  #  asusctl
-    vivaldi
-    vivaldi-ffmpeg-codecs
-    ffmpeg
-  #  minecraft
+    dotnet-sdk
+    dotnet-sdk_8
     nodejs_20
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    python311
+    typescript
+
+    # lsps
+    zls
+    rust-analyzer
+    lua-language-server
+    csharp-ls
+    
+    # dependencies
+    alsa-oss
+    alsa-lib
+    alsaLib.dev
+    alsa-utils
+    alsa-tools
+    alsa-firmware
+    pango
+    cairo
+
+
+
+    ncspot
+    kate
+    jetbrains.clion
+    jetbrains.rider
+    jetbrains.idea-ultimate
+    vscode
+    lutris
+    # unityhub
+    ffmpeg
+    gnumake
+    cmake
     opencv
+    htop
     # native wayland support (unstable)
     wineWowPackages.waylandFull
     # winetricks (all versions)
     winetricks
     # wine-staging (version with experimental features)
     wineWowPackages.staging
+    mono
     lua
-    qt6.full
-    qt6.qtlanguageserver
-    gnumake
-    cmake
-    jetbrains-toolbox
     zip
-    jetbrains.clion
-    jetbrains.dataspell
-    minecraft
-    python311Packages.jupyter
     qtcreator
-    qtcreator-qt6
+    discord
+    nasm
+    wezterm
+    lf
+    pkg-config
+    neofetch
+    librewolf
+    slic3r
+    btop
+    prismlauncher
+    dbus
+    (python311.withPackages(ps: with ps; [
+      python311Packages.protonvpn-nm-lib
+      dbus-python
+      proxy-py
+    ]))
+    coreutils
+    libreoffice
+    onlyoffice-bin
+    firefox-devedition
+
+    discordo
+
+    gtk4
+    gtk4-layer-shell
+    vieb
+    protonvpn-gui
+    protonvpn-cli
+    networkmanager-openvpn
+
+    dolphin
+    libsForQt5.ark
+
+    # wm stuff
+    waybar
+    dunst
+    fuzzel
+    playerctl
   ];
 
-  fonts.fonts = with pkgs; [
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    jetbrains-mono
-    (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-  #  noto-fonts-emoji
-  #  liberation_ttf
-  #  fira-code
-  #  fira-code-symbols
-  #  mplus-outline-fonts.githubRelease
-  #  dina-font
-  #  proggyfonts
-  ];
-  fonts.fontDir.enable = true;
+  fonts = {
+    packages = with pkgs; [
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+      jetbrains-mono
+      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+      fira-code
+      fira-code-symbols
+    ];
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        monospace = [ "jetbrains-mono" ];
+        serif = [ "Noto Serif CJK JP" ];
+        sansSerif = [ "Noto Sans CJK JP" ];
+      };
+    };
+    fontDir.enable = true;
+  };
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  };
+
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+    enableNvidiaPatches = true;
+  };
+
+  programs.bash.shellAliases = {
+    repos = "cd /mnt/data/repositories";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -223,11 +318,6 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-
-  fileSystems."/data" =
-    { device = "/dev/disk/by-uuid/44bfd8a6-c0a1-420f-83c3-091863b237e7";
-      fsType = "btrfs";
-    };
 
   # List services that you want to enable:
 
@@ -238,7 +328,26 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.enable = true;
+
+  environment.etc = {
+	  "pipewire/pipewire.conf.d/92-low-latency.conf".text = ''
+		  context.properties = {
+			  default.clock.rate = 48000
+				  default.clock.quantum = 32
+				  default.clock.min-quantum = 32
+				  default.clock.max-quantum = 32
+		  }
+	  '';
+  };
+
+  environment.variables = rec {
+    EDITOR = "nvim";
+    PATH = [
+      # "/mnt/data/repositories/zig/zig-out/bin"
+      # "/home/mikkel/Downloads/zig-linux-x86_64-0.12.0-dev"
+    ];
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
