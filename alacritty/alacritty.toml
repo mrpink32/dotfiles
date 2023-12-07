@@ -1,8 +1,4 @@
-[env]
-TERM = "alatritty"
-[general]
 live_config_reload = true
 [window]
 dynamic_padding = true
-opacity = 0.8
-decoration_theme_variant = "Light"
+# opacity = 0.5

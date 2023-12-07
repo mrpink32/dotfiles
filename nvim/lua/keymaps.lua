@@ -27,7 +27,7 @@ vim.keymap.set("n", "<leader>bd", ":bd<CR>")
 -- This is going to get me cancelled
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+vim.keymap.set("n", "<leader>ss", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
 
@@ -65,22 +65,22 @@ vim.o.timeoutlen = 300
 
 
 -- Telescope
-local status, telescope = pcall(require, "telescope.builtin")
-if status then
-    vim.keymap.set("n", "<leader>ff", telescope.find_files)
-    vim.keymap.set('n', '<leader>pf', telescope.find_files)
-    vim.keymap.set("n", "<leader>fg", telescope.live_grep)
-    vim.keymap.set("n", "<leader>fb", telescope.buffers)
-    vim.keymap.set("n", "<leader>fh", telescope.help_tags)
-    vim.keymap.set("n", "<leader>fs", telescope.git_status)
-    vim.keymap.set("n", "<leader>fc", telescope.git_commits)
-    vim.keymap.set('n', '<C-p>', telescope.git_files)
-    vim.keymap.set('n', '<leader>ps', function()
-        telescope.grep_string({ search = vim.fn.input("Grep > ") })
-    end)
-else
-    print("Telescope not found")
-end
+-- local status, telescope = pcall(require, "telescope.builtin")
+-- if status then
+--     vim.keymap.set("n", "<leader>ff", telescope.find_files)
+--     vim.keymap.set('n', '<leader>pf', telescope.find_files)
+--     vim.keymap.set("n", "<leader>fg", telescope.live_grep)
+--     vim.keymap.set("n", "<leader>fb", telescope.buffers)
+--     vim.keymap.set("n", "<leader>fh", telescope.help_tags)
+--     vim.keymap.set("n", "<leader>fs", telescope.git_status)
+--     vim.keymap.set("n", "<leader>fc", telescope.git_commits)
+--     vim.keymap.set('n', '<C-p>', telescope.git_files)
+--     vim.keymap.set('n', '<leader>ps', function()
+--         telescope.grep_string({ search = vim.fn.input("Grep > ") })
+--     end)
+-- else
+--     print("Telescope not found")
+-- end
 
 -- <leader> = the space key
 

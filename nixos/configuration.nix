@@ -16,6 +16,8 @@
   boot.initrd.kernelModules = [ "nvidia" ]; # "amdgpu"
   boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
 
+  hardware.enableAllFirmware = true;
+
   # Make sure opengl is enabled
   hardware.opengl = {
     enable = true;
@@ -34,23 +36,40 @@
     # Modesetting is needed for most Wayland compositors
     modesetting.enable = true;
 
-    # Use the open source version of the kernel module
-    # Only available on driver 515.43.04+
+    # prime = {
+    #   # sync.enable = true;
+    #   # offload = {
+    #   #   enable = true;
+    #   #   enableOffloadCmd = false;
+    #   # };
+
+    #   # Make sure to use the correct Bus ID values for your system!
+    #   nvidiaBusId = "PCI:1:0:0";
+    # };
+
+    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+    powerManagement.enable = true;
+    # Fine-grained power management. Turns off GPU when not in use.
+    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
+    powerManagement.finegrained = false;
+
+    # Use the NVidia open source kernel module (not to be confused with the
+    # independent third-party "nouveau" open source driver).
+    # Support is limited to the Turing and later architectures. Full list of 
+    # supported GPUs is at: 
+    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+    # Only available from driver 515.43.04+
+    # Do not disable this unless your GPU is unsupported or if you have a good reason to.
     open = true;
 
-    # Enable the nvidia settings menu
+    # Enable the Nvidia settings menu,
+    # accessible via `nvidia-settings`.
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
   
-  hardware.enableAllFirmware = true;
-
-  hardware.nvidia.powerManagement.enable = true;
-  # hardware.nvidia.powerManagement.finegrained = true;
-
-  # boot.kernelParams = [ "module_blacklist=amdgpu" ];
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -91,7 +110,6 @@
 
   # Enable the KDE Plasma Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.windowManager.openbox.enable = true;
   # services.xserver.desktopManager.plasma5.enable = true;
   # services.xserver.displayManager.defaultSession = "plasmawayland";
 
@@ -119,8 +137,9 @@
 
   #***** Apparently not the correct way to enable pipewire https://nixos.wiki/wiki/PipeWire *****
   # Enable sound with pipewire.
-  # sound.enable = true;
+  sound.enable = true;
   hardware.pulseaudio.enable = false;
+  hardware.pulseaudio.support32Bit = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -142,17 +161,15 @@
   users.users.mikkel = {
     isNormalUser = true;
     description = "mikkel";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" ];
   };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Enable flatpak
-  # services.flatpak.enable = true;
-
-  # 
+  # Extra xdg portals
   xdg.portal.extraPortals = [
+    # pkgs.xdg-desktop-portal-hyprland
     pkgs.xdg-desktop-portal-gtk
     pkgs.xdg-dbus-proxy
   ];
@@ -161,7 +178,6 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
     # 
     vim
@@ -255,6 +271,7 @@
     onlyoffice-bin
     firefox-devedition
 
+    lshw
     discordo
 
     gtk4
@@ -272,6 +289,7 @@
     dunst
     fuzzel
     playerctl
+    hyprpaper
   ];
 
   fonts = {
@@ -295,16 +313,16 @@
     fontDir.enable = true;
   };
 
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-  };
-
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
     enableNvidiaPatches = true;
+  };
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
 
   programs.bash.shellAliases = {
@@ -329,17 +347,6 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
-
-  environment.etc = {
-	  "pipewire/pipewire.conf.d/92-low-latency.conf".text = ''
-		  context.properties = {
-			  default.clock.rate = 48000
-				  default.clock.quantum = 32
-				  default.clock.min-quantum = 32
-				  default.clock.max-quantum = 32
-		  }
-	  '';
-  };
 
   environment.variables = rec {
     EDITOR = "nvim";
