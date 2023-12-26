@@ -1,151 +1,193 @@
-local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+-- setup basic neovim options
+require("options")
+
+-- setup lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  }
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
-    -- NOTE: First, some plugins that don't require any configuration
-
-    -- Git related plugins
-    'tpope/vim-fugitive',
-    'tpope/vim-rhubarb',
-
-    -- Detect tabstop and shiftwidth automatically
-    'tpope/vim-sleuth',
-
-    -- NOTE: This is where your plugins related to LSP can be installed.
-    --  The configuration is done below. Search for lspconfig to find it below.
-    {
-        -- LSP Configuration & Plugins
-        'neovim/nvim-lspconfig',
-        dependencies = {
-            -- Automatically install LSPs to stdpath for neovim
-            { 'williamboman/mason.nvim', config = true },
-            'williamboman/mason-lspconfig.nvim',
-
-            -- Useful status updates for LSP
-            -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-            { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-
-            -- Additional lua configuration, makes nvim stuff amazing!
-            'folke/neodev.nvim',
-        },
+local opts = {
+    root = vim.fn.stdpath("data") .. "/lazy", -- directory where plugins will be installed
+    defaults = {
+        lazy = false, -- should plugins be lazy-loaded?
+        version = nil,
+        -- default `cond` you can use to globally disable a lot of plugins
+        -- when running inside vscode for example
+        cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
+        -- version = "*", -- enable this to try installing the latest stable versions of plugins
     },
-
-    {
-        -- Autocompletion
-        'hrsh7th/nvim-cmp',
-        dependencies = {
-            -- Snippet Engine & its associated nvim-cmp source
-            'L3MON4D3/LuaSnip',
-            'saadparwaiz1/cmp_luasnip',
-
-            -- Adds LSP completion capabilities
-            'hrsh7th/cmp-nvim-lsp',
-
-            -- Adds a number of user-friendly snippets
-            'rafamadriz/friendly-snippets',
-        },
+    -- leave nil when passing the spec as the first argument to setup()
+    spec = nil, ---@type LazySpec
+    lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json", -- lockfile generated after running update.
+    concurrency = jit.os:find("Windows") and (vim.loop.available_parallelism() * 2) or nil, ---@type number limit the maximum amount of concurrent tasks
+    git = {
+        -- defaults for the `Lazy log` command
+        -- log = { "-10" }, -- show the last 10 commits
+        log = { "-8" }, -- show commits from the last 3 days
+        timeout = 120, -- kill processes that take more than 2 minutes
+        url_format = "https://github.com/%s.git",
+        -- lazy.nvim requires git >=2.19.0. If you really want to use lazy with an older version,
+        -- then set the below to false. This should work, but is NOT supported and will
+        -- increase downloads a lot.
+        filter = true,
     },
-
-    -- Useful plugin to show you pending keybinds.
-    { 'folke/which-key.nvim', opts = {} },
-    {
-        -- Adds git related signs to the gutter, as well as utilities for managing changes
-        'lewis6991/gitsigns.nvim',
-        opts = {
-            -- See `:help gitsigns.txt`
-            signs = {
-                add = { text = '+' },
-                change = { text = '~' },
-                delete = { text = '_' },
-                topdelete = { text = '‾' },
-                changedelete = { text = '~' },
+    dev = {
+        -- directory where you store your local plugin projects
+        path = "~/projects",
+        ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
+        patterns = {}, -- For example {"folke"}
+        fallback = false, -- Fallback to git when local plugin doesn't exist
+    },
+    install = {
+        -- install missing plugins on startup. This doesn't increase startup time.
+        missing = true,
+        -- try to load one of these colorschemes when starting an installation during startup
+        colorscheme = { "habamax" },
+    },
+    ui = {
+        -- a number <1 is a percentage., >1 is a fixed size
+        size = { width = 0.8, height = 0.8 },
+        wrap = true, -- wrap the lines in the ui
+        -- The border to use for the UI window. Accepts same border values as |nvim_open_win()|.
+        border = "none",
+        title = nil, ---@type string only works when border is not "none"
+        title_pos = "center", ---@type "center" | "left" | "right"
+        -- Show pills on top of the Lazy window
+        pills = true, ---@type boolean
+        icons = {
+            cmd = " ",
+            config = "",
+            event = "",
+            ft = " ",
+            init = " ",
+            import = " ",
+            keys = " ",
+            lazy = "󰒲 ",
+            loaded = "●",
+            not_loaded = "○",
+            plugin = " ",
+            runtime = " ",
+            require = "󰢱 ",
+            source = " ",
+            start = "",
+            task = "✔ ",
+            list = {
+                "●",
+                "➜",
+                "★",
+                "‒",
             },
-            on_attach = function(bufnr)
-                vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
-                vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
-                vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
-            end,
         },
-    },
+        -- leave nil, to automatically select a browser depending on your OS.
+        -- If you want to use a specific browser, you can define it here
+        browser = nil, ---@type string?
+        throttle = 20, -- how frequently should the ui process render events
+        custom_keys = {
+            -- You can define custom key maps here. If present, the description will
+            -- be shown in the help menu.
+            -- To disable one of the defaults, set it to false.
 
-    {
-        'folke/tokyonight.nvim',
-    },
-
-    {
-        "Shatur/neovim-ayu",
-    },
-
-    {
-        -- Set lualine as statusline
-        'nvim-lualine/lualine.nvim',
-        -- See `:help lualine.txt`
-    },
-
-    {
-        -- Add indentation guides even on blank lines
-        'lukas-reineke/indent-blankline.nvim',
-        -- Enable `lukas-reineke/indent-blankline.nvim`
-        -- See `:help indent_blankline.txt`
-        opts = {
-            char = '┊',
-            show_trailing_blankline_indent = false,
-        },
-    },
-    -- "gc" to comment visual regions/lines
-    { 'numToStr/Comment.nvim', opts = {} },
-
-    -- Fuzzy Finder (files, lsp, etc)
-    {
-        'nvim-telescope/telescope.nvim',
-        branch = '0.1.x',
-        dependencies = {
-            'nvim-lua/plenary.nvim',
-            -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-            -- Only load if `make` is available. Make sure you have the system
-            -- requirements installed.
-            {
-                'nvim-telescope/telescope-fzf-native.nvim',
-                -- NOTE: If you are having trouble with this installation,
-                --       refer to the README for telescope-fzf-native for more instructions.
-                build = 'make',
-                cond = function()
-                    return vim.fn.executable 'make' == 1
+            ["<localleader>l"] = {
+                function(plugin)
+                    require("lazy.util").float_term({ "lazygit", "log" }, {
+                        cwd = plugin.dir,
+                    })
                 end,
+                desc = "Open lazygit log",
+            },
+
+            ["<localleader>t"] = {
+                function(plugin)
+                    require("lazy.util").float_term(nil, {
+                        cwd = plugin.dir,
+                    })
+                end,
+                desc = "Open terminal in plugin dir",
             },
         },
     },
-    {
-        -- Highlight, edit, and navigate code
-        'nvim-treesitter/nvim-treesitter',
-        dependencies = {
-            'nvim-treesitter/nvim-treesitter-textobjects',
-        },
-        build = ':TSUpdate',
+    diff = {
+        -- diff command <d> can be one of:
+        -- * browser: opens the github compare view. Note that this is always mapped to <K> as well,
+        --   so you can have a different command for diff <d>
+        -- * git: will run git diff and open a buffer with filetype git
+        -- * terminal_git: will open a pseudo terminal with git diff
+        -- * diffview.nvim: will open Diffview to show the diff
+        cmd = "git",
     },
-    {'ixru/nvim-markdown'},
-  })
+    checker = {
+        -- automatically check for plugin updates
+        enabled = false,
+        concurrency = nil, ---@type number? set to 1 to check for updates very slowly
+        notify = true, -- get a notification when new updates are found
+        frequency = 3600, -- check for updates every hour
+        check_pinned = false, -- check for pinned packages that can't be updated
+    },
+    change_detection = {
+        -- automatically check for config file changes and reload the ui
+        enabled = true,
+        notify = true, -- get a notification when changes are found
+    },
+    performance = {
+        cache = {
+            enabled = true,
+        },
+        reset_packpath = true, -- reset the package path to improve startup time
+        rtp = {
+            reset = true, -- reset the runtime path to $VIMRUNTIME and your config directory
+            ---@type string[]
+            paths = {}, -- add any custom paths here that you want to includes in the rtp
+            ---@type string[] list any plugins you want to disable here
+            disabled_plugins = {
+                -- "gzip",
+                -- "matchit",
+                -- "matchparen",
+                -- "netrwPlugin",
+                -- "tarPlugin",
+                -- "tohtml",
+                -- "tutor",
+                -- "zipPlugin",
+            },
+        },
+    },
+    -- lazy can generate helptags from the headings in markdown readme files,
+    -- so :help works even for plugins that don't have vim docs.
+    -- when the readme opens with :help it will be correctly displayed as markdown
+    readme = {
+        enabled = true,
+        root = vim.fn.stdpath("state") .. "/lazy/readme",
+        files = { "README.md", "lua/**/README.md" },
+        -- only generate markdown helptags for plugins that dont have docs
+        skip_if_doc_exists = true,
+    },
+    state = vim.fn.stdpath("state") .. "/lazy/state.json", -- state info for checker and other things
+    build = {
+        -- Plugins can provide a `build.lua` file that will be executed when the plugin is installed
+        -- or updated. When the plugin spec also has a `build` command, the plugin's `build.lua` not be
+        -- executed. In this case, a warning message will be shown.
+        warn_on_override = true,
+    },
+    -- Enable profiling of lazy.nvim. This will add some overhead,
+    -- so only enable this when you are debugging lazy.nvim
+    profiling = {
+        -- Enables extra stats on the debug tab related to the loader cache.
+        -- Additionally gathers stats about all package.loaders
+        loader = false,
+        -- Track each new require in the Lazy profiling tab
+        require = false,
+    },
+}
 
--- require("plugins")
+require("lazy").setup("plugins", opts)
 
-require("options")
+-- setup keymaps
 require("keymaps")
-
-require("configs.treesitter")
-require("configs.lsp");
-require("configs.nvim-cmp")
-require("configs.lualine")
-require("configs.telescope")
-require("configs.which-key")
-
-vim.cmd[[colorscheme tokyonight-day]]

@@ -1,4 +1,4 @@
-require('lualine').setup {
+return {
   options = {
     icons_enabled = true,
     theme = 'auto',

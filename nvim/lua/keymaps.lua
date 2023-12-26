@@ -32,8 +32,6 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
 
 
-
-
 -- harpoon
 -- local mark = require('harpoon.mark')
 -- local ui = require('harpoon.ui')
@@ -45,7 +43,6 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 -- vim.keymap.set('n', '<C-t>', function() ui.nav_file(2) end)
 -- vim.keymap.set('n', '<C-n>', function() ui.nav_file(3) end)
 -- vim.keymap.set('n', '<C-s>', function() ui.nav_file(4) end)
-
 
 
 -- which-key
@@ -82,13 +79,7 @@ vim.o.timeoutlen = 300
 --     print("Telescope not found")
 -- end
 
--- <leader> = the space key
 
--- Save
--- map("n", "<leader>w", "<CMD>update<CR>")
-
--- Quit
--- map("n", "<leader>q", "<CMD>q<CR>")
 
 -- Exit insert mode
 -- map("i", "jk", "<ESC>")
@@ -124,8 +115,6 @@ vim.o.timeoutlen = 300
 -- map("n", "<C-Right>", "<C-w>>")
 -- map("n", "<C-Up>", "<C-w>+")
 -- map("n", "<C-Down>", "<C-w>-")
-
-
 
 
 
