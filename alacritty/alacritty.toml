@@ -1,6 +1,6 @@
 live_config_reload = true
-[shell]
-program = "/bin/zsh"
+# [shell]
+# program = "/bin/zsh"
 
 [window]
 dynamic_padding = true

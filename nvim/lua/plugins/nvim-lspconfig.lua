@@ -57,6 +57,14 @@ return {
             vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
                 vim.lsp.buf.format()
             end, { desc = 'Format current buffer with LSP' })
+
+            -- local client = vim.lsp.get_clients(bufnr)
+            -- if client.server_capabilities.inlayHintProvider then
+            vim.lsp.inlay_hint.enable(bufnr, true)
+            -- end
+
+
+
         end
 
         -- Enable the following language servers
