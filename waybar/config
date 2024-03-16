@@ -1,0 +1,161 @@
+{
+    // "height": 30, // Waybar height (to be removed for auto height)
+    "layer": "top", // Waybar at top layer
+        "margin-top": 0,
+        "margin-left": 0,
+        "margin-bottom": 0,
+        "margin-right": 0,
+        "spacing": 5, // Gaps between modules (4px)
+        "modules-left": ["custom/power-menu", "cpu", "memory", "network", "temperature", "hyprland/workspaces"],
+        "modules-center": ["custom/spotify"],
+        "modules-right": ["tray", "custom/power-profile", "backlight", "pulseaudio", "battery", "clock"],
+
+        "hyprland/workspaces": {
+            "format": "{icon}",
+            "on-click": "activate",
+            "format-icons": {
+                "1": "一",
+                "2": "二",
+                "3": "三",
+                "4": "四",
+                "5": "五",
+                "6": "六",
+                "7": "七",
+                "8": "八",
+                "9": "九",
+                "10": "十",
+                "urgent": "",
+                // "active": "",
+                // "default": ""
+            }
+        },
+
+        // "hyprland/window": {
+        //     "format": "{}"
+        // },
+
+        "tray": {
+            "spacing": 10,
+        },
+
+        "clock": {
+            "format": "<span color='#bf616a'> </span>{:%I:%M %p}",
+            "format-alt": "<span color='#bf616a'> </span>{:%a %b %d}",
+            // "format": "<span color='#bf616a'> </span>{:%I:%M %p} <span color='#bf616a'> </span>{:%a %b %d}",
+            "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+        },
+
+        "cpu": {
+            "interval": 10,
+            "format": " {}%",
+            // "max-length": 10,
+            // "on-click": "",
+        },
+
+        "memory": {
+            "interval": 30,
+            "format": " {}%",
+            "format-alt":" {used:0.1f}G",
+            // "max-length": 10,
+        },
+
+        "backlight": {
+            "device": "DP-1",
+            "format": "{icon} {percent}%",
+            "format-icons": ["", "", "", "", "", "", "", "", ""],
+            // "on-click": "",
+        },
+
+        "network": {
+            "format-wifi": "󰤨 {signalStrength}%",
+            "format-ethernet": "󰈀 wired",
+            "format-disconnected": "󰤫 ",
+            "format-disconnected": " Disconnected",
+            // "on-click": "bash ~/.config/waybar/scripts/rofi-wifi-menu.sh",
+        },
+
+        "pulseaudio": {
+            // "format": "{icon} {volume}%",
+            "format": "{icon} {volume}% {format_source}",
+            "format-muted": "🔇",
+            "format-muted": "🔇 {format_source}",
+            "format-source": " {volume}%",
+            "format-source-muted": "",
+            "format-bluetooth": "  {volume}%",
+            "format-bluetooth-muted": "🔇 ",
+            "format-icons": {
+                "headphone": "",
+                "hands-free": "",
+                "headset": "",
+                "phone": "",
+                "portable": "",
+                // "car": "",
+                "default": ["", "", ""],
+            },
+            // "on-click": "pavucontrol"
+        },
+
+        "bluetooth": {
+            "on-click": "~/.config/waybar/scripts/rofi-bluetooth &",
+            "format": " {status}",
+        },
+
+        "battery": {
+            // "bat": "BAT0",
+            // "adapter": "ADP0",
+            "interval": 60,
+            "states": {
+                "warning": 30,
+                "critical": 15
+            },
+            // "max-length": 20,
+            "format": "{capacity}% {icon}",
+            "format-warning": "{capacity}% {icon}",
+            "format-critical": "{capacity}% {icon}",
+            // "format-charging": "{capacity}% ",
+            "format-plugged": " {capacity}%",
+            "format-alt": "{icon} {time}",
+            "format-full": " {capacity}%",
+            // "format-full": "", // An empty format will hide the module
+            "format-icons": [" ", " ", " ", " ", " "],
+        },
+
+        "temperature": {
+	        // "thermal-zone": 2,
+	        // "hwmon-path": ["/sys/class/hwmon/hwmon2/temp1_input", "/sys/class/thermal/thermal_zone0/temp"],
+	        "critical-threshold": 90,
+	        "format": "{temperatureC}°C ",
+	        "format-critical": "{temperatureC}°C ",
+        },
+
+        "custom/spotify": {
+            "exec": "python3 ~/.config/waybar/scripts/mediaplayer.py --player spotify",
+            "format": "{}  ",
+            "return-type": "json",
+            "on-click": "playerctl play-pause",
+            "on-double-click-right": "playerctl next",
+            "on-scroll-down": "playerctl previous",
+        },
+
+        "custom/power-menu": {
+            "format": "<span color='#6a92d7'>󰐥</span>",
+            "on-click": "bash ~/.config/waybar/scripts/power-menu/powermenu.sh",
+        }, 
+
+        "custom/power-profile": {
+            "interval": 60,
+            // "exec": "asusctl profile -p &",
+            "exec": "bash ~/.config/waybar/scripts/power-profile/powerprofile.sh &",
+            // "states": {
+            //     "performance": 90,
+            //     "balanced": 60,
+            //     "quiet": 30,
+            // },
+            "format": "{} 󰈐 ",
+            // "format": "{} {icon}",
+            // "format-quiet": "quiet {} {icon}",
+            // "format-balanced": "balanced {} {icon}",
+            // "format-performance": "performance {} {icon}",
+            // "format-icons": ["󱑲 ", "󱑳 ", "󱑴 "],
+        },
+}
