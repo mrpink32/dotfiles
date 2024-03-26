@@ -9,13 +9,13 @@ performance='Active profile is Performance'
 quiet='Active profile is Quiet'
 
 case ${power_profile} in
-            $balanced)
-                        echo "Balanced" # 70
-                        ;;
             $performance)
-                        echo "Performance" # 100
+                        echo "Performance 󱑴 " # 100
+                        ;;
+            $balanced)
+                        echo "Balanced 󱑳 " # 70
                         ;;
             $quiet)
-                        echo "Quiet" # 40
+                        echo "Quiet 󱑲 " # 40
                         ;;
 esac

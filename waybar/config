@@ -151,7 +151,7 @@
             //     "balanced": 60,
             //     "quiet": 30,
             // },
-            "format": "{} 󰈐 ",
+            "format": "{}",
             // "format": "{} {icon}",
             // "format-quiet": "quiet {} {icon}",
             // "format-balanced": "balanced {} {icon}",
