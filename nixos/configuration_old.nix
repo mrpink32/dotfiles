@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports =
@@ -11,14 +11,14 @@
     ];
 
   # Bootloader.
-  boot.kernelPackages = pkgs.linuxPackages_testing;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.initrd.kernelModules = ["nvidia"];
+  boot.initrd.kernelModules = [ "nvidia" ]; # "amdgpu"
   boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
 
   hardware.enableAllFirmware = true;
 
+  # Make sure opengl is enabled
   hardware.opengl = {
     enable = true;
     driSupport = true;
@@ -27,39 +27,25 @@
 
   # Tell Xorg to use the nvidia driver (also valid for Wayland)
   services.xserver.videoDrivers = [
-    "amdgpu"
     "nvidia"
+    "amdgpu"
   ];
 
-  # ----- Nvidia options -----
   hardware.nvidia = {
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of 
-    # supported GPUs is at: 
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
-    # Only available from driver 515.43.04+
-    # Do not disable this unless your GPU is unsupported or if you have a good reason to.
-    open = false;
-
-    # Enable the Nvidia settings menu,
-    # accessible via `nvidia-settings`.
-    nvidiaSettings = true;
 
     # Modesetting is needed for most Wayland compositors
     modesetting.enable = true;
 
-    prime = {
-      sync.enable = true;
-    # offload = {
-    #   enable = true;
-    #   enableOffloadCmd = false;
-    # };
+    # prime = {
+    #   # sync.enable = true;
+    #   # offload = {
+    #   #   enable = true;
+    #   #   enableOffloadCmd = false;
+    #   # };
 
-      # Make sure to use the correct Bus ID values for your system!
-      amdgpuBusId = "PCI:7:0:0";
-      nvidiaBusId = "PCI:1:0:0";
-    };
+    #   # Make sure to use the correct Bus ID values for your system!
+    #   nvidiaBusId = "PCI:1:0:0";
+    # };
 
     # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
     powerManagement.enable = true;
@@ -67,14 +53,23 @@
     # Experimental and only works on modern Nvidia GPUs (Turing or newer).
     powerManagement.finegrained = false;
 
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.beta;# stable; # vulkan_beta
-  };
+    # Use the NVidia open source kernel module (not to be confused with the
+    # independent third-party "nouveau" open source driver).
+    # Support is limited to the Turing and later architectures. Full list of 
+    # supported GPUs is at: 
+    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+    # Only available from driver 515.43.04+
+    # Do not disable this unless your GPU is unsupported or if you have a good reason to.
+    open = true;
 
-  fileSystems."/mnt/data" = {
-    device = "/dev/disk/by-partuuid/5ade5046-c81a-4e13-8243-12f95819492d";
-    fsType = "btrfs";
+    # Enable the Nvidia settings menu,
+    # accessible via `nvidia-settings`.
+    nvidiaSettings = true;
+
+    # Optionally, you may need to select the appropriate driver version for your specific GPU.
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
+  
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -104,31 +99,33 @@
     LC_TIME = "ja_JP.UTF-8";
   };
 
-
-  # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
-    autorun = true;
-    displayManager.sddm.enable = true;
-  
-    # Enable touchpad support (enabled default in most desktopManager).
-    libinput.enable = true;
-
-    # Configure keymap in X11
-    xkb = {
-      layout = "us";
-      variant = "dvorak";
-      options = "caps:backspace,shift:both_capslock,grp:win_space_toggle";
-    };
+  fileSystems."/mnt/data" = { 
+    device = "/dev/disk/by-partuuid/0115fc15-0f38-1d45-be7b-c5c3d3ef13da";
+    fsType = "btrfs";
   };
 
+  # Enable the X11 windowing system.
+  services.xserver.enable = true;
+  services.xserver.autorun = true;
+
+  # Enable the KDE Plasma Desktop Environment.
+  services.xserver.displayManager.sddm.enable = true;
+  # services.xserver.desktopManager.plasma5.enable = true;
+  # services.xserver.displayManager.defaultSession = "plasmawayland";
+
   # Enable supergfxd power daemon
-  services.power-profiles-daemon.enable = true;
   services.supergfxd.enable = true;
   systemd.services.supergfxd.path = [ pkgs.pciutils ];
   services.asusd = {
     enable = true;
     enableUserService = true;
+  };
+
+  # Configure keymap in X11
+  services.xserver = {
+    layout = "us";
+    xkbVariant = "dvorak";
+    xkbOptions = caps:backspace;
   };
 
   # Configure console keymap
@@ -150,115 +147,65 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    # jack.enable = true;
+    jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
 
-  hardware.bluetooth.enable = true;
-
+  # Enable touchpad support (enabled default in most desktopManager).
+  services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.mikkel = {
     isNormalUser = true;
     description = "mikkel";
-    extraGroups = [ "networkmanager" "wheel" "audio" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" ];
   };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # Extra xdg portals
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-hyprland
-      pkgs.xdg-dbus-proxy
-      pkgs.xdg-desktop-portal-gtk
-    ];
-  };
-  # xdg.portal.extraPortals = [
-  #   # pkgs.xdg-desktop-portal-hyprland
-  #   pkgs.xdg-desktop-portal-gtk
-  #   pkgs.xdg-dbus-proxy
-  # ];
-
-  wayland.windowManager.hyprland = {
-    # Whether to enable Hyprland wayland compositor
-    enable = true;
-    # The hyprland package to use
-    package = pkgs.hyprland;
-    # Whether to enable XWayland
-    xwayland.enable = true;
-
-    # Optional
-    # Whether to enable hyprland-session.target on hyprland startup
-    systemd.enable = true;
-  };
-
-  # programs.hyprland = {
-  #   enable = true;
-  #   package = pkgs.hyprland;
-  #   xwayland.enable = true;
-
-  #   systemd.enable = true;
-  # };
-
-  # environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  xdg.portal.extraPortals = [
+    # pkgs.xdg-desktop-portal-hyprland
+    pkgs.xdg-desktop-portal-gtk
+    pkgs.xdg-dbus-proxy
+  ];
 
   # enable nix experimental features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # programs.neovim = {
-  #   enable = true;
-  #   defaultEditor = true;
-  # };
-
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
+    # 
     vim
-    neovim
-    kitty
     alacritty
+    neovim
     git
     git-doc
     man
     wget
+    wezterm
 
     # programming langs
-    lld
-    clang
-    clang-tools
-    clang-manpages
-    lldb
-    libclang
-    llvm_17
+    lld_16
+    clang_16
+    llvm_16
+    lldb_16
     libllvm
-    llvm-manpages
-    # llvmPackages_17.stdenv
-    # llvmPackages_17.clang-manpages
-    # llvmPackages_17.llvm-manpages
-    # llvmPackages_17.lldb-manpages
-    # llvmPackages_17.libllvm
     gcc
     rustup
     zig
     go
     jdk20
     jdk
+    jdk17
     jdk11
-    (with dotnetCorePackages; combinePackages [
-      sdk_9_0
-      sdk_8_0
-      sdk_7_0
-      sdk_6_0
-    ])
-    # dotnet-sdk_7
-    # dotnet-sdk
-    # dotnet-sdk_8
+    dotnet-sdk_7
+    dotnet-sdk
+    dotnet-sdk_8
     nodejs_20
     typescript
 
@@ -267,7 +214,6 @@
     rust-analyzer
     lua-language-server
     csharp-ls
-    omnisharp-roslyn
     
     # dependencies
     alsa-oss
@@ -278,24 +224,17 @@
     alsa-firmware
     pango
     cairo
-    pkg-config
-    gnome.adwaita-icon-theme
-    unzip
-    xdg-utils
-    supergfxctl
-    tree-sitter
 
-    # other apps
+
+
     ncspot
     kate
     jetbrains.clion
     jetbrains.rider
+    jetbrains.idea-ultimate
+    vscode
     lutris
-    webcord
-    unityhub
-    godot_4
-    godot4-mono
-    # godot3-mono
+    # unityhub
     ffmpeg
     gnumake
     cmake
@@ -307,73 +246,43 @@
     winetricks
     # wine-staging (version with experimental features)
     wineWowPackages.staging
-    protontricks
     mono
     lua
     zip
+    qtcreator
     discord
-    spotify
     nasm
+    wezterm
     lf
+    pkg-config
     neofetch
     librewolf
     slic3r
     btop
     prismlauncher
     dbus
-    # python312
-    # (pkgs.python3.withPackages (python-pkgs: [
-    #   python-pkgs.pandas
-    #   python-pkgs.requests
-    # ]))
-    (python312.withPackages(ps: with ps; [
-      pip
-      # (pip)
+    (python311.withPackages(ps: with ps; [
+      python311Packages.protonvpn-nm-lib
+      dbus-python
+      proxy-py
     ]))
     coreutils
     libreoffice
     onlyoffice-bin
-    vlc
-    mpv
     firefox-devedition
-    freecad
-    cura
-    trilium-desktop
-    heroic
-    osu-lazer-bin
-    protonvpn-gui
-    protonvpn-cli
-
-    virt-manager
-    qemu
-    qemu-utils
-    virglrenderer
-    OVMFFull
-
-    gimp
-    drawio
-    obs-studio
-
 
     lshw
     discordo
-    steam-tui
-
-    bluez
 
     gtk4
     gtk4-layer-shell
-    jetbrains-toolbox
+    vieb
+    protonvpn-gui
+    protonvpn-cli
+    networkmanager-openvpn
 
     dolphin
     libsForQt5.ark
-
-    asusctl
-
-    bluetuith
-
-    ungoogled-chromium
-    # chromium
 
     # wm stuff
     waybar
@@ -381,24 +290,7 @@
     fuzzel
     playerctl
     hyprpaper
-    xwaylandvideobridge
-    rofi
-    rofi-wayland
-    hyprcursor
-
-    # custom packages
-    # (import /mnt/data/repositories/wayland/src/default.nix)
-    # (import /mnt/data/repositories/statusbar/c_test/default.nix)
   ];
-
-  programs.nix-ld = {
-    enable = true;
-    libraries = with pkgs; [
-      # libraries to make available for dynamicly linked programs
-    ];
-  };
-
-
 
   fonts = {
     packages = with pkgs; [
@@ -407,8 +299,6 @@
       noto-fonts-cjk-serif
       jetbrains-mono
       (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-      nerdfonts
-      fira-code-nerdfont
       fira-code
       fira-code-symbols
     ];
@@ -423,29 +313,20 @@
     fontDir.enable = true;
   };
 
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+    enableNvidiaPatches = true;
+  };
+
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
 
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      swtpm.enable = true;
-      ovmf = {
-        enable = true;
-	packages = [ pkgs.OVMFFull.fd ];
-      };
-    };
-  };
-
   programs.bash.shellAliases = {
     repos = "cd /mnt/data/repositories";
-    switch = "sudo nixos-rebuild switch";
-    switch-update = "sudo nixos-rebuild switch --upgrade";
-    boot-update = "sudo nixos-rebuild boot --upgrade";
   };
 
   # Some programs need SUID wrappers, can be configured further or are
