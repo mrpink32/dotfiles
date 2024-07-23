@@ -240,7 +240,7 @@ return {
             nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
             -- Lesser used LSP functionality
-            nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+            -- nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
             nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
             nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
             nmap('<leader>wl', function()
@@ -252,10 +252,7 @@ return {
                 vim.lsp.buf.format()
             end, { desc = 'Format current buffer with LSP' })
 
-            -- local client = vim.lsp.get_clients(bufnr)
-            -- if client.server_capabilities.inlayHintProvider then
-            vim.lsp.inlay_hint.enable(bufnr, true)
-            -- end
+            vim.lsp.inlay_hint.enable(true)
         end
 
         -- Enable the following language servers

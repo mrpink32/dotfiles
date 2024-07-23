@@ -77,12 +77,12 @@
         "pulseaudio": {
             // "format": "{icon} {volume}%",
             "format": "{icon} {volume}% {format_source}",
-            "format-muted": "🔇",
-            "format-muted": "🔇 {format_source}",
+            "format-muted": " ",
+            "format-muted": "  {format_source}",
             "format-source": " {volume}%",
             "format-source-muted": "",
             "format-bluetooth": "  {volume}%",
-            "format-bluetooth-muted": "🔇 ",
+            "format-bluetooth-muted": " ",
             "format-icons": {
                 "headphone": "",
                 "hands-free": "",

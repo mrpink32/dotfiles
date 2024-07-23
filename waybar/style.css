@@ -9,8 +9,8 @@ window#waybar {
   color: #ffffff;
   transition-property: background-color;
   transition-duration: 0.5s;
-  border-top: 8px transparent;
-  border-radius: 8px;
+  border-top: 0px transparent;
+  border-radius: 0px;
   transition-duration: 0.5s;
   margin: 16px 16px;
 }
@@ -81,14 +81,16 @@ window#waybar.hidden {
   padding: 0 10px;
   color: #e5e5e5;
   /* color: #bf616a; */
-  border-radius: 9.5px;
+  /*border-radius: 9.5px;*/
+  border-radius: 0px;
   background-color: #1f2530;
 }
 
 #window,
 #workspaces {
   margin: 0 4px;
-  border-radius: 7.8px;
+  /*border-radius: 7.8px;*/
+  border-radius: 0px;
   background-color: #1f2530;
 }
 
@@ -103,16 +105,14 @@ window#waybar.hidden {
 }
 
 #custom-power-menu {
-  border-radius: 9.5px;
+  border-radius: 0px;
   background-color: #1b242b;
-  border-radius: 7.5px;
   padding: 0 5px;
 }
 
 #custom-power-profile {
-  border-radius: 9.5px;
+  border-radius: 0px;
   background-color: #1b242b;
-  border-radius: 7.5px;
   padding: 0 5px;
 }
 #custom-power-profile.quiet {
@@ -129,7 +129,7 @@ window#waybar.hidden {
 #custom-launcher {
   background-color: #1b242b;
   color: #6a92d7;
-  border-radius: 7.5px;
+  border-radius: 0px;
   padding: 0 3px;
 }
 
