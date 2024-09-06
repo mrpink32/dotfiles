@@ -10,32 +10,24 @@
         ./nixvim-configuration.nix
     ];
 
-    nix = {
-        package = pkgs.nixVersions.latest;
-        registry = {
-            nixpkgs.flake = inputs.nixpkgs;
-	        hyprland.flake = inputs.hyprland;
-            nixpkgs-stable.flake = inputs.nixpkgs-stable;
-            nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
-        };
-    };
-
     # Bootloader.
-    boot.kernel = {
-        enable = true;
-        sysctl = { "vm.max_map_count" = 2147483642; };
-        features = {
-            rust = true;
-            debug = true;
+    boot = {
+        kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_len; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
+        #kernelParams = [ "processor.max_cstate=1" ];
+        kernel = {
+            enable = true;
+            sysctl = { "vm.max_map_count" = 2147483642; };
+            features = {
+                rust = true;
+                debug = true;
+            };
         };
+        loader.systemd-boot.enable = true;
+        loader.efi.canTouchEfiVariables = true;
+        initrd.kernelModules = [ "nvidia" ];
+        initrd.systemd.dbus.enable = true;
+        extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
     };
-    boot.kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_len; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
-    #boot.kernelParams = [ "processor.max_cstate=1" ];
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
-    boot.initrd.kernelModules = [ "nvidia" ];
-    boot.initrd.systemd.dbus.enable = true;
-    boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
 
     #hardware.enableAllFirmware = true;
     hardware.enableRedistributableFirmware = true;
@@ -229,8 +221,18 @@
         allowBroken = false;
     };
 
-    # enable nix experimental features
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+    nix = {
+        package = pkgs.nixVersions.latest;
+        # add some flake inputs to the nix-registry for nix search
+        registry = {
+            nixpkgs.flake = inputs.nixpkgs;
+	        hyprland.flake = inputs.hyprland;
+            nixpkgs-stable.flake = inputs.nixpkgs-stable;
+            nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+        };
+        # enable nix experimental features
+        settings.experimental-features = [ "nix-command" "flakes" ];
+    };
 
     # Extra xdg portals
     xdg.portal = {
@@ -251,7 +253,6 @@
             autosuggestions.enable = true;
             shellAliases = {
                 repos = "cd /mnt/data/repositories";
-                shell = "nix-shell";
                 build = "nix-build";
                 update-inputs = "nix flake update /etc/nixos";
             };
@@ -261,7 +262,6 @@
             completion.enable = true;
             shellAliases = {
                 repos = "cd /mnt/data/repositories";
-                shell = "nix-shell";
                 build = "nix-build";
                 update-flakes = "nix flake update /etc/nixos";
             };
@@ -504,20 +504,11 @@
             polychromatic
             razergenie
             r2modman
-            # JellyFin
-            #jellyfin
-            #jellyfin-web
-            #jellyfin-ffmpeg
             # custom packages
             # (import /mnt/data/repositories/wayland/src/default.nix)
             # (import /mnt/data/repositories/statusbar/c_test/default.nix)
         ];
     };
-
-    #services.jellyfin = {
-    #    enable = true;
-    #    openFirewall = false;
-    #};
 
     #services.monado.enable = true;
 
