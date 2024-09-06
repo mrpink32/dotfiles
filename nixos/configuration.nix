@@ -10,27 +10,59 @@
         ./nixvim-configuration.nix
     ];
 
-    # Bootloader.
-    boot.kernelPackages = pkgs.linuxPackages_zen;
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
-    boot.initrd.kernelModules = ["nvidia"];
-    boot.initrd.systemd.dbus.enable = true;
-    boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
-    boot.kernel.sysctl = { "vm.max_map_count" = 2147483642; };
-
-    hardware.enableAllFirmware = true;
-    hardware.bluetooth.enable = true;
-    #hardware.bluetooth.settings = {General = { Experimental = "true"; }; };
-
-    hardware.opengl = {
-        enable = true;
-        driSupport = true;
-        driSupport32Bit = true;
+    nix = {
+        package = pkgs.nixVersions.latest;
+        registry = {
+            nixpkgs.flake = inputs.nixpkgs;
+	        hyprland.flake = inputs.hyprland;
+            nixpkgs-stable.flake = inputs.nixpkgs-stable;
+            nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+        };
     };
 
-    # Tell Xorg to use the nvidia driver (also valid for Wayland)
-    services.xserver.videoDrivers = [ "amdgpu" "nvidia" ];
+    # Bootloader.
+    boot.kernel = {
+        enable = true;
+        sysctl = { "vm.max_map_count" = 2147483642; };
+        features = {
+            rust = true;
+            debug = true;
+        };
+    };
+    boot.kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_len; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
+    #boot.kernelParams = [ "processor.max_cstate=1" ];
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
+    boot.initrd.kernelModules = [ "nvidia" ];
+    boot.initrd.systemd.dbus.enable = true;
+    boot.extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
+
+    #hardware.enableAllFirmware = true;
+    hardware.enableRedistributableFirmware = true;
+    hardware.cpu.amd.updateMicrocode = true;
+
+    hardware.openrazer.enable = true;
+
+    hardware.bluetooth = {
+        enable = true;
+        input = {
+            General = {
+                ClassicBondedOnly = false;
+            };
+        };
+    };
+    #hardware.bluetooth.settings = {General = { Experimental = "true"; }; };
+
+    # enable graphics
+    hardware.graphics = {
+        enable = true;
+        #extraPackages = [ inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mesa.drivers ];
+        enable32Bit = true;
+        #extraPackages32 =  [ inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pkgsi686Linux.mesa.drivers ];
+    };
+
+    # Load nvidia driver for Xorg and Wayland
+    services.xserver.videoDrivers = ["nvidia"]; #"amdgpu"
 
     # ----- Nvidia options -----
     hardware.nvidia = {
@@ -52,64 +84,88 @@
 
         prime = {
             sync.enable = true;
-            # offload = {
-            #   enable = true;
-            #   enableOffloadCmd = false;
-            # };
-
-            # Make sure to use the correct Bus ID values for your system!
-            amdgpuBusId = "PCI:7:0:0";
             nvidiaBusId = "PCI:1:0:0";
+            amdgpuBusId = "PCI:7:0:0";
         };
 
         # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-        powerManagement.enable = true;
-        # Fine-grained power management. Turns off GPU when not in use.
-        # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-        powerManagement.finegrained = false;
+        powerManagement = {
+            enable = true;
+            # Fine-grained power management. Turns off GPU when not in use.
+            # Experimental and only works on modern Nvidia GPUs (Turing or newer).
+            finegrained = false;
+        };
 
         # Optionally, you may need to select the appropriate driver version for your specific GPU.
-        package = config.boot.kernelPackages.nvidiaPackages.beta;# stable; # vulkan_beta
+        # https://github.com/NixOS/nixpkgs/tree/nixos-unstable/pkgs/os-specific/linux/nvidia-x11
+        package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
 
-    networking.hostName = "nixos"; # Define your hostname.
-    # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+    # ----- AMD GPU options -----
+    #hardware.amdgpu = {
+    #    initrd.enable = true;
+    #    opencl.enable = true;
+    #    amdvlk = {
+    #        enable = true;
+    #        support32Bit.enable = true;
+    #        supportExperimental.enable = true;
+    #    };
+    #};
 
-    # Configure network proxy if necessary
-    # networking.proxy.default = "http://user:password@proxy:port/";
-    # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+    # ----- Networking -----
+    networking = {
+        networkmanager.enable = true;
+        hostName = "nixos"; # Define your hostname.
+        # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-    # Enable networking
-    networking.networkmanager.enable = true;
+        # Configure network proxy if necessary
+        # networking.proxy.default = "http://user:password@proxy:port/";
+        # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+    };
 
     # Set your time zone.
     time.timeZone = "Europe/Copenhagen";
 
     # Select internationalisation properties.
-    i18n.defaultLocale = "ja_JP.UTF-8";
-
-    i18n.extraLocaleSettings = {
-        LC_ADDRESS = "ja_JP.UTF-8";
-        LC_IDENTIFICATION = "ja_JP.UTF-8";
-        LC_MEASUREMENT = "ja_JP.UTF-8";
-        LC_MONETARY = "ja_JP.UTF-8";
-        LC_NAME = "ja_JP.UTF-8";
-        LC_NUMERIC = "ja_JP.UTF-8";
-        LC_PAPER = "ja_JP.UTF-8";
-        LC_TELEPHONE = "ja_JP.UTF-8";
-        LC_TIME = "ja_JP.UTF-8";
+    i18n = {
+        defaultLocale = "en_US.UTF-8";
+        extraLocaleSettings = {
+            LC_ADDRESS = "ja_JP.UTF-8";
+            LC_IDENTIFICATION = "ja_JP.UTF-8";
+            LC_MEASUREMENT = "ja_JP.UTF-8";
+            LC_MONETARY = "ja_JP.UTF-8";
+            LC_NAME = "ja_JP.UTF-8";
+            LC_NUMERIC = "ja_JP.UTF-8";
+            LC_PAPER = "ja_JP.UTF-8";
+            LC_TELEPHONE = "ja_JP.UTF-8";
+            LC_TIME = "ja_JP.UTF-8";
+        };
+        inputMethod = {
+            enable = true;
+            type = "fcitx5";
+            fcitx5 = {
+                waylandFrontend = true;
+                addons = with pkgs; [ fcitx5-mozc ];
+            };
+        };
     };
 
     services = {
-        displayManager.sddm = {
-            enable = true;
-            wayland.enable = true;
-            #package = pkgs.kdePackages.sddm;
-            enableHidpi = true;
+        displayManager = {
+            defaultSession = "hyprland";
+            sddm = {
+                enable = true;
+                wayland.enable = true;
+                #package = pkgs.kdePackages.sddm;
+                #enableHidpi = true;
+            };
         };
         # Enable touchpad support (enabled default in most desktopManager).
         libinput.enable = true;
-        desktopManager.plasma6.enable = true;
+        desktopManager = {
+            cosmic.enable = true;
+            plasma6.enable = true;
+        };
     };
 
     # Enable the X11 windowing system.
@@ -119,6 +175,7 @@
 
         # Configure keymap in X11
         xkb = {
+            model = "pc104";
             layout = "us,dk";
             variant = "dvorak,dvorak";
             options = "caps:backspace,shift:both_capslock,grp:win_space_toggle";
@@ -139,13 +196,11 @@
 
     # Configure console keymap
     console.useXkbConfig = true;
-    #console.keyMap = "dvorak";
 
     # Enable CUPS to print documents.
     services.printing.enable = true;
 
     # Enable sound using pipewire.
-    sound.enable = false;
     hardware.pulseaudio.enable = false;
     hardware.pulseaudio.support32Bit = false;
     security.rtkit.enable = true;
@@ -169,7 +224,10 @@
     };
 
     # Allow unfree packages
-    nixpkgs.config.allowUnfree = true;
+    nixpkgs.config = {
+        allowUnfree = true;
+        allowBroken = false;
+    };
 
     # enable nix experimental features
     nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -177,12 +235,11 @@
     # Extra xdg portals
     xdg.portal = {
         enable = true;
-        wlr.enable = true;
         extraPortals = [
             pkgs.xdg-utils
             pkgs.xdg-dbus-proxy
-            pkgs.xdg-desktop-portal-cosmic
-            pkgs.xdg-desktop-portal-gtk
+            #pkgs.xdg-desktop-portal-cosmic
+            pkgs.kdePackages.xdg-desktop-portal-kde
         ];
     };
 
@@ -196,23 +253,17 @@
                 repos = "cd /mnt/data/repositories";
                 shell = "nix-shell";
                 build = "nix-build";
-                switch = "sudo nixos-rebuild switch";
-                switch-update = "sudo nixos-rebuild switch --upgrade";
-                boot-update = "sudo nixos-rebuild boot --upgrade";
                 update-inputs = "nix flake update /etc/nixos";
             };
-            shellInit = "fastfetch";
+            #shellInit = "fastfetch";
         };
         bash = {
-            enableCompletion = true;
+            completion.enable = true;
             shellAliases = {
                 repos = "cd /mnt/data/repositories";
                 shell = "nix-shell";
                 build = "nix-build";
-                switch = "sudo nixos-rebuild switch";
-                switch-update = "sudo nixos-rebuild switch --upgrade";
-                boot-update = "sudo nixos-rebuild boot --upgrade";
-                update-inputs = "nix flake update /etc/nixos";
+                update-flakes = "nix flake update /etc/nixos";
             };
         };
         tmux = {
@@ -227,186 +278,248 @@
         };
         hyprland = {
             enable = true;
-            package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+            package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.system}.hyprland;
             xwayland.enable = true;
+        };
+        hyprlock = {
+            enable = false;
+            #package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprlock;
         };
         steam = {
             enable = true;
             extest.enable = true;
+            protontricks.enable = true;
             gamescopeSession.enable = true;
             remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
             dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+            fontPackages = with pkgs; [ source-han-sans ];
+            extraPackages = with pkgs; [
+                gamescope
+            ];
         };
+        gamescope.enable = true;
     };
 
+    #packageGroups = import ../package-groups.nix { inherit pkgs; };
+    #environment.systemPackages = with packageGroups; [ desktop dev utils ];
+
     # List packages installed in system profile. To search, run:
-    environment.systemPackages = [ #with pkgs;
-        pkgs.vim
-        pkgs.alacritty
-        pkgs.zellij
-        pkgs.git
-        pkgs.git-doc
-        pkgs.man
-        pkgs.man-pages
-        pkgs.wget
-        pkgs.fastfetch
-        pkgs.hydra-check
-        # programming langs
-        pkgs.lld_18
-        pkgs.clang_18
-        pkgs.clang-tools_18
-        pkgs.lldb_18
-        pkgs.llvm_18
-        pkgs.llvmPackages_18.clang-unwrapped
-        pkgs.llvmPackages_18.stdenv
-        pkgs.llvmPackages_18.llvm-manpages
-        pkgs.llvmPackages_18.clang-manpages
-        pkgs.llvmPackages_18.lldb-manpages
-        pkgs.llvmPackages_18.libllvm
-        pkgs.libclang
-        pkgs.zig_0_12
-        pkgs.go
-        pkgs.jdk22
-        pkgs.jdk
-        (with pkgs.dotnetCorePackages; combinePackages [
-            sdk_9_0
-            sdk_8_0
-            sdk_7_0
-            sdk_6_0
-        ])
-        pkgs.dotnetPackages.Nuget
-        pkgs.nodejs_20
-        pkgs.typescript
-        # dependencies
-        pkgs.alsa-oss
-        pkgs.alsa-lib
-        pkgs.alsaLib.dev
-        pkgs.alsa-utils
-        pkgs.alsa-tools
-        pkgs.alsa-firmware
-        pkgs.pango
-        pkgs.cairo
-        pkgs.pkg-config
-        pkgs.gnome.adwaita-icon-theme
-        pkgs.unzip
-        pkgs.unrar
-        pkgs.xdg-utils
-        pkgs.supergfxctl
-        pkgs.tree-sitter
-        # other apps
-        pkgs.ncspot
-        pkgs.kate
-        pkgs.jetbrains.clion
-        pkgs.jetbrains.rider
-        pkgs.jetbrains-toolbox
-        pkgs.lutris
-        pkgs.unityhub
-        #pkgs.godot_4
-        (pkgs.callPackage "${inputs.nixpkgs-godot}/pkgs/development/tools/godot/4/mono" { }) #.override { withTouch = false; })
-        pkgs.gparted
-        pkgs.ffmpeg
-        pkgs.gnumake
-        pkgs.cmake
-        pkgs.opencv
-        pkgs.htop
-        # native wayland support (unstable)
-        pkgs.wineWowPackages.waylandFull
-        # winetricks (all versions)
-        pkgs.winetricks
-        # wine-staging (version with experimental features)
-        pkgs.wineWowPackages.staging
-        pkgs.protontricks
-        pkgs.mono
-        pkgs.lua
-        pkgs.zip
-        (pkgs.discord.override {
-            withOpenASAR = true;
-            withVencord = true;
-        })
-        (pkgs.discord-canary.override {
-            withOpenASAR = true;
-            withVencord = true;
-        })
-        pkgs.spotify
-        pkgs.nasm
-        pkgs.lf
-        pkgs.slic3r
-        pkgs.btop
-        pkgs.prismlauncher
-        (pkgs.python312.withPackages(ps: with ps; [
-            pip
-        ]))
-        pkgs.coreutils
-        pkgs.libreoffice
-        pkgs.onlyoffice-bin
-        pkgs.vlc
-        pkgs.mpv
-        pkgs.firefox-devedition
-        pkgs.librewolf
-        pkgs.freecad
-        pkgs.cura
-        pkgs.trilium-desktop
-        pkgs.heroic
-        pkgs.osu-lazer-bin
-        pkgs.protonvpn-gui
-        pkgs.protonvpn-cli
-        #virtual manager
-        pkgs.virt-manager
-        pkgs.qemu
-        pkgs.qemu-utils
-        pkgs.virglrenderer
-        pkgs.OVMFFull
-        #other
-        pkgs.gimp
-        pkgs.drawio
-        pkgs.obs-studio
-        pkgs.lshw
-        pkgs.discordo
-        pkgs.steam-tui
-        pkgs.bluez
-        pkgs.bluez-tools
-        pkgs.gtk4
-        pkgs.gtk4-layer-shell
-        pkgs.kdePackages.dolphin
-        pkgs.kdePackages.ark
-        pkgs.kdePackages.ktorrent
-        pkgs.kdePackages.partitionmanager
-        pkgs.openhmd
-        pkgs.openvr
-        pkgs.asusctl
-        pkgs.brightnessctl
-        pkgs.ungoogled-chromium
-        pkgs.sixpair
-        pkgs.jstest-gtk
-        # wm stuff
-        pkgs.waybar
-        pkgs.dunst
-        pkgs.fuzzel
-        pkgs.playerctl
-        pkgs.hyprpaper
-        pkgs.xwaylandvideobridge
-        pkgs.rofi
-        pkgs.rofi-wayland
-        # cosmic
-        pkgs.cosmic-term
-        pkgs.cosmic-edit
-        pkgs.cosmic-files
-        pkgs.cosmic-screenshot
-        pkgs.webcord-vencord
-        #kicad
-        #pkgs.kicad
-        pkgs.kicad-unstable
-        #pkgs.kicad-testing
-        pkgs.steamtinkerlaunch
-        pkgs.calibre
-        pkgs.vesktop
+    environment = {
+        plasma6.excludePackages = with pkgs; [
+            kdePackages.konsole
+            kdePackages.plasma-browser-integration
+            kdePackages.oxygen
+        ];
+        systemPackages = with pkgs; [ 
+            vim
+            alacritty
+            kitty
+            zellij
+            git
+            git-doc
+            man
+            man-pages
+            wget
+	        inetutils
+            flac
+            fastfetch
+            neovim-unwrapped
+            mercurial
+            #clang_18
+            #clang-tools_18
+            #lld_18
+            #lldb_18
+            #llvm_18
+            #libclang
+            llvmPackages_19.clang
+            llvmPackages_19.clang-tools
+            llvmPackages_19.lld
+            llvmPackages_19.lldb
+            llvmPackages_19.llvm
+            llvmPackages_19.libclang
+            cargo
+            rustc
+            (inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.master)
+            odin
+            go
+            jdk22
+            jdk
+            (with dotnetCorePackages; combinePackages [
+                sdk_9_0
+                sdk_8_0
+                sdk_7_0
+                sdk_6_0
+                aspnetcore_9_0
+            ])
+            dotnetPackages.Nuget
+            nodePackages_latest.nodejs
+            #nodejs_22
+            typescript
+            # dependencies
+            glibc.dev
+            libGLU.dev
+            SDL2.dev
+            freetype.dev
+            alsa-oss
+            alsa-lib.dev
+            libpulseaudio.dev
+            alsa-utils
+            alsa-tools
+            alsa-plugins
+            alsa-firmware
+            pango
+            cairo
+            pkg-config
+            adwaita-icon-theme
+            unzip
+            unrar
+            xdg-utils
+            supergfxctl
+            tree-sitter
+            libva.dev
+            # other apps
+            ncspot
+            kdePackages.kate
+            jetbrains.clion
+            jetbrains.rider
+            jetbrains.writerside
+            jetbrains.rust-rover
+            jetbrains.idea-ultimate
+            #vscode
+            (vscode-with-extensions.override {
+                vscodeExtensions = with vscode-extensions; [
+                    #ms-python.python
+                    vscodevim.vim
+                    ms-vscode.live-server
+                    ritwickdey.liveserver
+                    ms-vsliveshare.vsliveshare
+                    ms-azuretools.vscode-docker
+                    ms-vscode-remote.remote-ssh
+                    vscode-extensions.ms-dotnettools.csdevkit
+                ];
+            })
+            lutris
+            unityhub
+            #(callPackage "${inputs.nixpkgs-godot}/pkgs/development/tools/godot/4/mono" { }) #.override { withTouch = false; })
+            gparted
+            ffmpeg_7
+            gnumake
+            cmake
+            opencv
+            htop
+            # native wayland support (unstable)
+            wineWowPackages.waylandFull
+            # winetricks (all versions)
+            winetricks
+            # wine-staging (version with experimental features)
+            wineWowPackages.staging
+            #pkgs.protontricks
+            steamcmd
+            mono
+            lua
+            zip
+            (discord.override {
+                withOpenASAR = true;
+                withVencord = true;
+            })
+            discordo
+            #(discord-canary.override {
+            #    withOpenASAR = true;
+            #    withVencord = true;
+            #})
+            spotify
+            nasm
+            lf
+            slic3r
+            btop
+            prismlauncher
+            (python313.withPackages(ps: with ps; [
+                pip
+            ]))
+            coreutils
+            libreoffice
+            onlyoffice-bin
+            vlc
+            mpv
+            inputs.firefox-nightly.packages.${pkgs.system}.firefox-nightly-bin
+            firefox-devedition
+            librewolf
+            unstable.freecad
+            stable.cura
+            trilium-desktop
+            heroic
+            osu-lazer-bin
+            protonvpn-gui
+            protonvpn-cli
+            #virtual manager
+            virt-manager
+            qemu
+            qemu-utils
+            virglrenderer
+            OVMFFull
+            #other
+            gimp
+            krita
+            drawio
+            obs-studio
+            lshw
+            steam-tui
+            bluez
+            bluez-tools
+            gtk4
+            gtk4-layer-shell
+            kdePackages.dolphin
+            kdePackages.ark
+            kdePackages.ktorrent
+            kdePackages.partitionmanager
+            kdePackages.spectacle
+            kdePackages.kdenlive
+            openhmd
+            openvr
+            asusctl
+            brightnessctl
+            sixpair
+            jstest-gtk
+            # wm stuff
+            waybar
+            dunst
+            fuzzel
+            playerctl
+            hyprpaper
+            xwaylandvideobridge
+            rofi
+            rofi-wayland
+            # cosmic
+            cosmic-term
+            cosmic-edit
+            cosmic-files
+            cosmic-screenshot
+            unstable.kicad
+            #kicad-unstable
+            #kicad-testing
+            steamtinkerlaunch
+            calibre
+            vesktop
+            # Razer device management apps
+            polychromatic
+            razergenie
+            r2modman
+            # JellyFin
+            #jellyfin
+            #jellyfin-web
+            #jellyfin-ffmpeg
+            # custom packages
+            # (import /mnt/data/repositories/wayland/src/default.nix)
+            # (import /mnt/data/repositories/statusbar/c_test/default.nix)
+        ];
+    };
 
-        # custom packages
-        # (import /mnt/data/repositories/wayland/src/default.nix)
-        # (import /mnt/data/repositories/statusbar/c_test/default.nix)
-    ];
+    #services.jellyfin = {
+    #    enable = true;
+    #    openFirewall = false;
+    #};
 
-    services.monado.enable = true;
+    #services.monado.enable = true;
 
     fonts = {
         packages = with pkgs; [
@@ -433,67 +546,15 @@
         };
     };
 
-    #programs.zsh = {
-    #    enable = true;
-    #    enableCompletion = true;
-    #    enableBashCompletion = true;
-    #    autosuggestions.enable = true;
-    #    shellAliases = {
-    #        repos = "cd /mnt/data/repositories";
-    #        shell = "nix-shell";
-    #        build = "nix-build";
-    #        switch = "sudo nixos-rebuild switch";
-    #        switch-update = "sudo nixos-rebuild switch --upgrade";
-    #        boot-update = "sudo nixos-rebuild boot --upgrade";
-    #        update-inputs = "nix flake update /etc/nixos";
-    #    };
-    #    shellInit = "fastfetch";
-    #};
-    #programs.bash = {
-    #    enableCompletion = true;
-    #    shellAliases = {
-    #        repos = "cd /mnt/data/repositories";
-    #        shell = "nix-shell";
-    #        build = "nix-build";
-    #        switch = "sudo nixos-rebuild switch";
-    #        switch-update = "sudo nixos-rebuild switch --upgrade";
-    #        boot-update = "sudo nixos-rebuild boot --upgrade";
-    #        update-inputs = "nix flake update /etc/nixos";
-    #    };
-    #};
-    #programs.tmux = {
-    #    enable = true;
-    #    clock24 = true;
-    #};
-    #programs.nix-ld = {
-    #    enable = true;
-    #    libraries = with pkgs; [
-    #        # libraries to make available for dynamicly linked programs
-    #    ];
-    #};
-    #programs.hyprland = {
-    #    enable = true;
-    #    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    #    xwayland.enable = true;
-    #};
-    #programs.steam = {
-    #    enable = true;
-    #    extest.enable = true;
-    #    gamescopeSession.enable = true;
-    #    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    #    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    #};
-
     # Enable the OpenSSH daemon.
     services.openssh.enable = false;
 
-    # Open ports in the firewall.
-    # networking.firewall.allowedTCPPorts = [ ... ];
-    # networking.firewall.allowedUDPPorts = [ ... ];
-    # Or disable the firewall altogether.
     networking.firewall.enable = true;
+    # Open ports in the firewall.
+    # networking.firewall.allowedTCPPorts = [ 8080 ];
+    # networking.firewall.allowedUDPPorts = [ 51820 ];
 
-    environment.variables = rec {
+    environment.variables = {
         EDITOR = "nvim";
         PATH = [];
     };

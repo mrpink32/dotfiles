@@ -1,10 +1,8 @@
 { config, lib, pkgs, inputs, ... }:
-
 {
     imports = [
         inputs.nixvim.nixosModules.nixvim
     ];
-
     programs.nixvim = {
         enable = true;
         enableMan = true;
@@ -13,104 +11,159 @@
             enable = true;
             settings.style = "night";
         };
-
-        globals.mapleader = ","; # Sets the leader key to comma
-
+        globals.mapleader = " "; # Sets the leader key to space
         opts = {
             number = true;
             relativenumber = true;
-
             expandtab = true;
             tabstop = 4;
             softtabstop = 4;
             shiftwidth = 4;
-
             autoindent = true;
             smartindent = true;
-
             encoding = "UTF-8";
-
             wrap = false;
-
             backup = false;
-
             hlsearch = false;
             incsearch = true;
-
             termguicolors = true;
-
             scrolloff = 12;
             sidescrolloff = 12;
             signcolumn = "yes";
-
             updatetime = 120;
-
             colorcolumn = "80";
-
             winbl = 30;
-
             mouse = "";
             mousehide = true;
             mousescroll = "ver:0,hor:0";
-
             cursorline = true;
             cursorcolumn = true;
             cursorlineopt = "both";
-
             timeout = true;
             timeoutlen = 300;
         };
-
         keymaps = [
             {
                 action = "<CMD>Neotree toggle<CR>";
                 key = "<leader>t";
             }
             {
-                action = "vim.lsp.buf.code_action";
+                action.__raw = "vim.lsp.buf.code_action";
                 key = "<leader>ca";
-                lua = true;
                 options.desc = "[C]ode [A]ction";
             }
             {
-                action = "vim.lsp.buf.definition";
-                key = "gD";
-                lua = true;
+                action.__raw = "vim.lsp.buf.definition";
+                key = "gd";
                 options.desc = "[G]oto [D]efinition";
             }
-            #{
-            #    action = "require('telescope.builtin').lsp_refrences";
-            #    key = "gR";
-            #    lua = true;
-            #    options.desc = "[G]oto [R]efrence";
-            #}
             {
-                action = "vim.lsp.buf.implementation";
-                key = "gI";
-                lua = true;
+                action.__raw = "vim.lsp.buf.implementation";
+                key = "gi";
                 options.desc = "[G]oto [I]mplementations";
             }
             {
-                action = "vim.lsp.buf.hover";
+                action.__raw = "vim.lsp.buf.hover";
                 key = "K";
-                lua = true;
                 options.desc = "Hover Documentation";
             }
             {
-                action = "vim.lsp.buf.signature_help";
+                action.__raw = "vim.lsp.buf.signature_help";
                 key = "<C-k>";
-                lua = true;
                 options.desc = "Signature Documentation";
             }
+            {
+                action = "[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])";
+                key = "<leader>s";
+                mode = ["n"];
+                options.desc = "Search and replace";
+            }
         ];
-
         plugins = {
-            nix-develop.enable = true;
-            telescope.enable = true;
+            telescope = {
+                enable = true;
+                extensions.fzf-native = {
+                    enable = true;
+                    settings.fuzzy = false;
+                };
+                keymaps = {
+                    "<leader>/" = {
+                        action = "current_buffer_fuzzy_find";
+                        options = {
+                            desc = "[/] Fuzzily search in current buffer";
+                        };
+                    };
+                    "<leader>?" = {
+                        action = "oldfiles";
+                        options = {
+                            desc = "[?] Find recently opened files";
+                        };
+                    };
+                    "<leader><space>" = {
+                        action = "buffers";
+                        options = {
+                            desc = "[ ] Find existing buffers";
+                        };
+                    };
+                    "<leader>gf" = {
+                        action = "git_files";
+                        options = {
+                            desc = "[G]it [F]iles";
+                        };
+                    };
+                    "<leader>gs" = {
+                        action = "git_status";
+                        options = {
+                            desc = "[G]it [S]tatus";
+                        };
+                    };
+                    "<leader>gc" = {
+                        action = "git_commits";
+                        options = {
+                            desc = "[G]it [C]ommits";
+                        };
+                    };
+                    "<leader>ff" = {
+                        action = "find_files";
+                        options = {
+                            desc = "[F]ind [F]iles";
+                        };
+                    };
+                    "<leader>gr" = {
+                        action = "lsp_refrences";
+                        options.desc = "[G]oto [R]efrence";
+                    };
+                    "<leader>fh" = {
+                        action = "help_tags";
+                        options = {
+                            desc = "[F]ind [H]elp_tags";
+                        };
+                    };
+                    "<leader>sd" = {
+                        action = "diagnostics";
+                        options = {
+                            desc = "[S]earch [D]iagnostics";
+                        };
+                    };
+                    "<leader>fb" = {
+                        action = "buffers";
+                        options = {
+                            desc = "[F]ind existing [B]uffers";
+                        };
+                    };
+                    "<leader>fg" = {
+                        action = "live_grep";
+                        options = {
+                            desc = "[F]ind by [G]rep";
+                        };
+                    };
+                };
+            };
             treesitter = {
                 enable = true;
-                indent = true;
+                settings.indent.enable = true;
             };
+            todo-comments.enable = true;
             lualine.enable = true;
             luasnip.enable = true;
             neo-tree = {
@@ -121,7 +174,7 @@
                         --auto close
                         require('neo-tree.command').execute({action = 'close'})
                         end
-                        ";
+                    ";
                 };
             };
             which-key.enable = true;
@@ -156,10 +209,12 @@
             };
             lsp = {
                 enable = true;
+                inlayHints = true;
                 servers = {
                     clangd = {
                         enable = true;
-                        package = pkgs.clang-tools_18;
+                        package = pkgs.llvmPackages_19.clang-tools;
+                        #extraOptions = "-fexperimental-new-constant-interpreter";
                     };
                     rust-analyzer = {
                         enable = true;
@@ -169,18 +224,32 @@
                     };
                     zls = {
                         enable = true;
-                        package = inputs.nixpkgs-zls.packages.${pkgs.system}.zls;
+                        package = inputs.zls.packages.${pkgs.system}.zls;
                     };
                     nixd.enable = true;
                     #csharp-ls.enable = true;
                     omnisharp.enable = true;
+                    html = {
+                        enable = true;
+                    };
+                    cssls = {
+                        enable = true;
+                    };
                     tsserver = {
                         enable = true;
-                        package = pkgs.nodePackages_latest.typescript-language-server;
+                        #package = pkgs.nodePackages_latest.typescript-language-server;
+                    };
+                    ols = {
+                        enable = true;
+                        package = pkgs.ols;
+                        autostart = true;
                     };
                 };
+            };
+            zig = {
+                enable = true;
+                package = (inputs.zig.packages.${"x86_64-linux"}.master);
             };
         };
     };
 }
-
