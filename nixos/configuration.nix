@@ -13,7 +13,7 @@
     # Bootloader.
     boot = {
         kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_len; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
-        #kernelParams = [ "processor.max_cstate=1" ];
+        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" ];
         kernel = {
             enable = true;
             sysctl = { "vm.max_map_count" = 2147483642; };
@@ -255,6 +255,7 @@
                 repos = "cd /mnt/data/repositories";
                 build = "nix-build";
                 update-inputs = "nix flake update /etc/nixos";
+                list-profiles = "nix-env --list-generations -p /nix/var/nix/profiles/system";
             };
             #shellInit = "fastfetch";
         };
@@ -264,6 +265,7 @@
                 repos = "cd /mnt/data/repositories";
                 build = "nix-build";
                 update-flakes = "nix flake update /etc/nixos";
+                list-profiles = "nix-env --list-generations -p /nix/var/nix/profiles/system";
             };
         };
         tmux = {
@@ -395,6 +397,7 @@
                     ms-vsliveshare.vsliveshare
                     ms-azuretools.vscode-docker
                     ms-vscode-remote.remote-ssh
+                    vscode-extensions.ms-dotnettools.csharp
                     vscode-extensions.ms-dotnettools.csdevkit
                 ];
             })
