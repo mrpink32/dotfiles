@@ -399,6 +399,7 @@
                     ms-vscode-remote.remote-ssh
                     vscode-extensions.ms-dotnettools.csharp
                     vscode-extensions.ms-dotnettools.csdevkit
+                    vscode-extensions.ms-dotnettools.vscode-dotnet-runtime
                 ];
             })
             lutris
@@ -507,6 +508,7 @@
             polychromatic
             razergenie
             r2modman
+            wireshark
             # custom packages
             # (import /mnt/data/repositories/wayland/src/default.nix)
             # (import /mnt/data/repositories/statusbar/c_test/default.nix)

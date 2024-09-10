@@ -5,7 +5,10 @@
             url = "github:NixOS/nixpkgs/nixpkgs-unstable";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        nixpkgs-stable.url = "github:NixOS/nixpkgs/release-24.05";
+        nixpkgs-stable = {
+            url = "github:NixOS/nixpkgs/release-24.05";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
         hyprland = {
             url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
             inputs.nixpkgs.follows = "nixpkgs";
@@ -18,8 +21,14 @@
             url = "github:ilikefrogs101/nixpkgs/master";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        zig.url = "github:mitchellh/zig-overlay";
-        zls.url = "github:zigtools/zls/master";
+        zig = {
+            url = "github:mitchellh/zig-overlay";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
+        zls = {
+            url = "github:zigtools/zls/master";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
         nixos-cosmic = {
             url = "github:lilyinstarlight/nixos-cosmic";
             inputs.nixpkgs.follows = "nixpkgs";
