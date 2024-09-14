@@ -7,6 +7,7 @@
         enable = true;
         enableMan = true;
         package = pkgs.neovim-unwrapped;
+        clipboard.register = "unnamedplus";
         colorschemes.tokyonight = {
             enable = true;
             settings.style = "night";
@@ -84,7 +85,7 @@
                 enable = true;
                 extensions.fzf-native = {
                     enable = true;
-                    settings.fuzzy = false;
+                    settings.fuzzy = true;
                 };
                 keymaps = {
                     "<leader>/" = {
@@ -227,8 +228,14 @@
                         package = inputs.zls.packages.${pkgs.system}.zls;
                     };
                     nixd.enable = true;
-                    #csharp-ls.enable = true;
-                    omnisharp.enable = true;
+                    omnisharp = {
+                        enable = true;
+                        package = pkgs.omnisharp-roslyn;
+                    };
+                    csharp-ls = {
+                        enable = false;
+                        package = pkgs.csharp-ls;
+                    };
                     html = {
                         enable = true;
                     };

@@ -183,6 +183,7 @@
         asusd = {
             enable = true;
             enableUserService = true;
+            package = pkgs.asusctl;
         };
     };
 
@@ -240,7 +241,7 @@
         extraPortals = [
             pkgs.xdg-utils
             pkgs.xdg-dbus-proxy
-            #pkgs.xdg-desktop-portal-cosmic
+            pkgs.xdg-desktop-portal-cosmic
             pkgs.kdePackages.xdg-desktop-portal-kde
         ];
     };
@@ -271,6 +272,10 @@
         tmux = {
             enable = true;
             clock24 = true;
+        };
+        rog-control-center = {
+            enable = true;
+            autoStart = true;
         };
         nix-ld = {
             enable = true;
@@ -352,6 +357,7 @@
                 sdk_7_0
                 sdk_6_0
                 aspnetcore_9_0
+                aspnetcore_8_0
             ])
             dotnetPackages.Nuget
             nodePackages_latest.nodejs
@@ -480,7 +486,6 @@
             kdePackages.kdenlive
             openhmd
             openvr
-            asusctl
             brightnessctl
             sixpair
             jstest-gtk
