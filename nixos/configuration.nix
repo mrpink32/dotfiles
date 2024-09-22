@@ -12,8 +12,8 @@
 
     # Bootloader.
     boot = {
-        kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_len; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
-        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" ];
+        kernelPackages = pkgs.linuxPackages_testing; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
+        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" ];
         kernel = {
             enable = true;
             sysctl = { "vm.max_map_count" = 2147483642; };
@@ -29,8 +29,8 @@
         extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
     };
 
-    #hardware.enableAllFirmware = true;
-    hardware.enableRedistributableFirmware = true;
+    hardware.enableAllFirmware = true;
+    #hardware.enableRedistributableFirmware = true;
     hardware.cpu.amd.updateMicrocode = true;
 
     hardware.openrazer.enable = true;
@@ -52,9 +52,6 @@
         enable32Bit = true;
         #extraPackages32 =  [ inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pkgsi686Linux.mesa.drivers ];
     };
-
-    # Load nvidia driver for Xorg and Wayland
-    services.xserver.videoDrivers = ["nvidia"]; #"amdgpu"
 
     # ----- Nvidia options -----
     hardware.nvidia = {
@@ -164,6 +161,8 @@
     services.xserver = {
         enable = true;
         autorun = true;
+        # Load nvidia driver for Xorg and Wayland
+        videoDrivers = ["nvidia"]; #"amdgpu"
 
         # Configure keymap in X11
         xkb = {
@@ -206,6 +205,8 @@
         # jack.enable = true;
     };
 
+    # enable flatpak
+    services.flatpak.enable = true;
 
     # Define a user account. Don't forget to set a password with ‘passwd’.
     users.defaultUserShell = pkgs.zsh;
@@ -318,6 +319,7 @@
             kdePackages.oxygen
         ];
         systemPackages = with pkgs; [ 
+            microcode-amd
             vim
             alacritty
             kitty
@@ -331,6 +333,7 @@
             flac
             fastfetch
             neovim-unwrapped
+            anki
             mercurial
             #clang_18
             #clang-tools_18
@@ -433,10 +436,6 @@
                 withVencord = true;
             })
             discordo
-            #(discord-canary.override {
-            #    withOpenASAR = true;
-            #    withVencord = true;
-            #})
             spotify
             nasm
             lf
@@ -454,8 +453,6 @@
             inputs.firefox-nightly.packages.${pkgs.system}.firefox-nightly-bin
             firefox-devedition
             librewolf
-            unstable.freecad
-            stable.cura
             trilium-desktop
             heroic
             osu-lazer-bin
@@ -503,9 +500,9 @@
             cosmic-edit
             cosmic-files
             cosmic-screenshot
+            #unstable.freecad-wayland
+            #stable.cura
             unstable.kicad
-            #kicad-unstable
-            #kicad-testing
             steamtinkerlaunch
             calibre
             vesktop

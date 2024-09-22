@@ -7,7 +7,13 @@
         enable = true;
         enableMan = true;
         package = pkgs.neovim-unwrapped;
-        clipboard.register = "unnamedplus";
+        clipboard = {
+            register = "unnamedplus";
+            providers.wl-copy = {
+                enable = true;
+                package = pkgs.wl-clipboard;
+            };
+        };
         colorschemes.tokyonight = {
             enable = true;
             settings.style = "night";
@@ -42,6 +48,7 @@
             cursorlineopt = "both";
             timeout = true;
             timeoutlen = 300;
+            #clipboard = [ "unnamedplus" ];
         };
         keymaps = [
             {
@@ -242,7 +249,7 @@
                     cssls = {
                         enable = true;
                     };
-                    tsserver = {
+                    ts-ls = {
                         enable = true;
                         #package = pkgs.nodePackages_latest.typescript-language-server;
                     };
@@ -252,6 +259,9 @@
                         autostart = true;
                     };
                 };
+            };
+            lint = {
+                enable = true;
             };
             zig = {
                 enable = true;
