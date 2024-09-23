@@ -88,6 +88,7 @@
             }
         ];
         plugins = {
+            web-devicons.enable = true;
             telescope = {
                 enable = true;
                 extensions.fzf-native = {
