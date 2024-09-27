@@ -37,9 +37,13 @@
             url = "github:nix-community/flake-firefox-nightly";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+        lix-module = {
+            url = "https://git.lix.systems/lix-project/nixos-module/archive/2.91.0.tar.gz";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
 
-    outputs = {nixpkgs,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,...} @ inputs:
+    outputs = {nixpkgs,lix-module,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,...} @ inputs:
     let
         system = "x86_64-linux";
         overlay-stable = final: prev: {
@@ -76,6 +80,7 @@
                         ];
                     };
                 }
+                lix-module.nixosModules.default
                 nixos-cosmic.nixosModules.default
                 ({ ... }: { nixpkgs.overlays = [ 
                         overlay-unstable

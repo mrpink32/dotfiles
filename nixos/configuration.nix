@@ -205,14 +205,6 @@
         # jack.enable = true;
     };
 
-    # enable flatpak
-    services.flatpak.enable = true;
-
-    virtualisation.docker = {
-        enable = true;
-        storageDriver = "btrfs";
-    };
-
     # Define a user account. Don't forget to set a password with ‘passwd’.
     users.defaultUserShell = pkgs.zsh;
     users.users.mikkel = {
@@ -229,16 +221,47 @@
     };
 
     nix = {
-        package = pkgs.nixVersions.latest;
+        enable = true;
+        package = pkgs.lix;# pkgs.nixVersions.latest;
         # add some flake inputs to the nix-registry for nix search
         registry = {
             nixpkgs.flake = inputs.nixpkgs;
 	        hyprland.flake = inputs.hyprland;
             nixpkgs-stable.flake = inputs.nixpkgs-stable;
             nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+            firefox-nightly.flake = inputs.firefox-nightly;
+            lix-module.flake = inputs.lix-module;
         };
+        settings.sandbox = true;
         # enable nix experimental features
         settings.experimental-features = [ "nix-command" "flakes" ];
+    };
+
+    documentation = {
+        enable = true;
+        nixos = {
+            enable = true;
+            #includeAllModules = true;
+        };
+        man = {
+            enable = true;
+            generateCaches = true;
+            man-db = {
+                enable = true;
+                package = pkgs.man-db;
+            };
+        };
+        info.enable = true;
+        doc.enable = true;
+        dev.enable = true;
+    };
+
+    # enable flatpak
+    services.flatpak.enable = true;
+
+    virtualisation.docker = {
+        enable = true;
+        storageDriver = "btrfs";
     };
 
     # Extra xdg portals
@@ -338,6 +361,9 @@
             flac
             fastfetch
             neovim-unwrapped
+            bc
+            file
+            bat
             anki
             mercurial
             #clang_18
