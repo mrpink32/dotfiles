@@ -12,13 +12,13 @@
 
     # Bootloader.
     boot = {
-        kernelPackages = pkgs.linuxPackages_testing; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
-        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" ];
+        kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
+        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
         kernel = {
             enable = true;
             sysctl = { "vm.max_map_count" = 2147483642; };
             features = {
-                rust = true;
+                #rust = true;
                 debug = true;
             };
         };
@@ -72,9 +72,13 @@
         modesetting.enable = true;
 
         prime = {
+            #offload = {
+            #    enable = true;
+            #    enableOffloadCmd = true;
+            #};
             sync.enable = true;
-            nvidiaBusId = "PCI:1:0:0";
             amdgpuBusId = "PCI:7:0:0";
+            nvidiaBusId = "PCI:1:0:0";
         };
 
         # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
@@ -90,16 +94,29 @@
         package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
 
+    specialisation = {
+        travel.configuration = {
+            hardware.nvidia = {
+                prime.sync.enable = lib.mkForce false;
+                prime.offload = {
+                    enable = lib.mkForce true;
+                    enableOffloadCmd = lib.mkForce true;
+                };
+                powerManagement.finegrained = lib.mkForce true;
+            };
+        };
+    };
+
     # ----- AMD GPU options -----
-    #hardware.amdgpu = {
-    #    initrd.enable = true;
-    #    opencl.enable = true;
-    #    amdvlk = {
-    #        enable = true;
-    #        support32Bit.enable = true;
-    #        supportExperimental.enable = true;
-    #    };
-    #};
+    hardware.amdgpu = {
+        initrd.enable = true;
+        opencl.enable = true;
+        amdvlk = {
+            enable = true;
+            support32Bit.enable = true;
+            supportExperimental.enable = true;
+        };
+    };
 
     # ----- Networking -----
     networking = {
@@ -155,6 +172,7 @@
             cosmic.enable = true;
             plasma6.enable = true;
         };
+        #dockerRegistry.enable = true;
     };
 
     # Enable the X11 windowing system.
@@ -261,7 +279,12 @@
 
     virtualisation.docker = {
         enable = true;
+        enableOnBoot = true;
         storageDriver = "btrfs";
+        rootless = {
+            enable = true;
+            setSocketVariable = true;
+        };
     };
 
     # Extra xdg portals
@@ -334,6 +357,7 @@
             ];
         };
         gamescope.enable = true;
+        gamemode.enable = true;
     };
 
     #packageGroups = import ../package-groups.nix { inherit pkgs; };
@@ -365,6 +389,7 @@
             file
             bat
             anki
+            zoxide
             mercurial
             #clang_18
             #clang-tools_18
