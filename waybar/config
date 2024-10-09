@@ -6,8 +6,8 @@
         "margin-bottom": 0,
         "margin-right": 0,
         "spacing": 5, // Gaps between modules (4px)
-        "modules-left": ["custom/power-menu", "cpu", "memory", "network", "temperature", "hyprland/workspaces"],
-        "modules-center": ["custom/spotify"],
+        "modules-left": ["cpu", "memory", "network", "temperature", "hyprland/workspaces"], // "custom/power-menu"
+        "modules-center": [], // "custom/spotify"
         "modules-right": ["tray", "custom/power-profile", "backlight", "pulseaudio", "battery", "clock"],
 
         "hyprland/workspaces": {
@@ -39,9 +39,8 @@
         },
 
         "clock": {
-            "format": "<span color='#bf616a'> </span>{:%I:%M %p}",
-            "format-alt": "<span color='#bf616a'> </span>{:%a %b %d}",
-            // "format": "<span color='#bf616a'> </span>{:%I:%M %p} <span color='#bf616a'> </span>{:%a %b %d}",
+            "format": "<span color='#bf616a'> </span>{:%H:%M}", 
+            "format-alt": "<span color='#bf616a'> </span>{:%a %d:%m:%y}",
             "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
         },
 
