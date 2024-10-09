@@ -13,85 +13,107 @@
     # Bootloader.
     boot = {
         kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
-        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
+        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ];
         kernel = {
             enable = true;
-            sysctl = { "vm.max_map_count" = 2147483642; };
+            sysctl = {
+                "vm.max_map_count" = 2147483642;
+            };
             features = {
                 #rust = true;
                 debug = true;
             };
         };
-        loader.systemd-boot.enable = true;
-        loader.efi.canTouchEfiVariables = true;
-        initrd.kernelModules = [ "nvidia" ];
-        initrd.systemd.dbus.enable = true;
+        loader = {
+            systemd-boot.enable = true;
+            efi.canTouchEfiVariables = true;
+        };
+        initrd = {
+            kernelModules = [ "nvidia" ];
+            systemd.dbus.enable = true;
+        };
         extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
     };
 
-    hardware.enableAllFirmware = true;
-    #hardware.enableRedistributableFirmware = true;
-    hardware.cpu.amd.updateMicrocode = true;
+    # ----- hardware options -----
+    hardware = {
+        enableAllFirmware = true;
+        enableRedistributableFirmware = true;
+        cpu.amd.updateMicrocode = true;
 
-    hardware.openrazer.enable = true;
+        # ----- openrazer options -----
+        openrazer.enable = true;
 
-    hardware.bluetooth = {
-        enable = true;
-        input = {
-            General = {
-                ClassicBondedOnly = false;
-            };
-        };
-    };
-    #hardware.bluetooth.settings = {General = { Experimental = "true"; }; };
-
-    # enable graphics
-    hardware.graphics = {
-        enable = true;
-        #extraPackages = [ inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mesa.drivers ];
-        enable32Bit = true;
-        #extraPackages32 =  [ inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pkgsi686Linux.mesa.drivers ];
-    };
-
-    # ----- Nvidia options -----
-    hardware.nvidia = {
-        # Use the NVidia open source kernel module (not to be confused with the
-        # independent third-party "nouveau" open source driver).
-        # Support is limited to the Turing and later architectures. Full list of 
-        # supported GPUs is at: 
-        # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
-        # Only available from driver 515.43.04+
-        # Do not disable this unless your GPU is unsupported or if you have a good reason to.
-        open = true;
-
-        # Enable the Nvidia settings menu,
-        # accessible via `nvidia-settings`.
-        nvidiaSettings = true;
-
-        # Modesetting is needed for most Wayland compositors
-        modesetting.enable = true;
-
-        prime = {
-            #offload = {
-            #    enable = true;
-            #    enableOffloadCmd = true;
-            #};
-            sync.enable = true;
-            amdgpuBusId = "PCI:7:0:0";
-            nvidiaBusId = "PCI:1:0:0";
-        };
-
-        # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-        powerManagement = {
+        # ----- bluetooth options -----
+        bluetooth = {
             enable = true;
-            # Fine-grained power management. Turns off GPU when not in use.
-            # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-            finegrained = false;
+            input = {
+                General = {
+                    ClassicBondedOnly = false;
+                };
+            };
+            #settings = {General = { Experimental = "true"; }; };
         };
 
-        # Optionally, you may need to select the appropriate driver version for your specific GPU.
-        # https://github.com/NixOS/nixpkgs/tree/nixos-unstable/pkgs/os-specific/linux/nvidia-x11
-        package = config.boot.kernelPackages.nvidiaPackages.beta;
+        # ----- graphics options -----
+        graphics = {
+            enable = true;
+            #extraPackages = [ inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mesa.drivers ];
+            enable32Bit = true;
+            #extraPackages32 =  [ inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.pkgsi686Linux.mesa.drivers ];
+        };
+
+        # ----- Nvidia options -----
+        nvidia = {
+            # Use the NVidia open source kernel module (not to be confused with the
+            # independent third-party "nouveau" open source driver).
+            # Support is limited to the Turing and later architectures. Full list of 
+            # supported GPUs is at: 
+            # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+            # Only available from driver 515.43.04+
+            # Do not disable this unless your GPU is unsupported or if you have a good reason to.
+            open = true;
+
+            # Enable the Nvidia settings menu,
+            # accessible via `nvidia-settings`.
+            nvidiaSettings = true;
+
+            # Modesetting is needed for most Wayland compositors
+            modesetting.enable = true;
+
+            prime = {
+                #offload = {
+                #    enable = true;
+                #    enableOffloadCmd = true;
+                #};
+                sync.enable = true;
+                amdgpuBusId = "PCI:7:0:0";
+                nvidiaBusId = "PCI:1:0:0";
+            };
+
+            # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+            powerManagement = {
+                enable = true;
+                # Fine-grained power management. Turns off GPU when not in use.
+                # Experimental and only works on modern Nvidia GPUs (Turing or newer).
+                finegrained = false;
+            };
+
+            # Optionally, you may need to select the appropriate driver version for your specific GPU.
+            # https://github.com/NixOS/nixpkgs/tree/nixos-unstable/pkgs/os-specific/linux/nvidia-x11
+            package = config.boot.kernelPackages.nvidiaPackages.beta;
+        };
+
+        # ----- AMDGPU options -----
+        amdgpu = {
+            initrd.enable = true;
+            opencl.enable = true;
+            #amdvlk = {
+            #    enable = true;
+            #    support32Bit.enable = true;
+            #    supportExperimental.enable = true;
+            #};
+        };
     };
 
     specialisation = {
@@ -104,17 +126,6 @@
                 };
                 powerManagement.finegrained = lib.mkForce true;
             };
-        };
-    };
-
-    # ----- AMD GPU options -----
-    hardware.amdgpu = {
-        initrd.enable = true;
-        opencl.enable = true;
-        amdvlk = {
-            enable = true;
-            support32Bit.enable = true;
-            supportExperimental.enable = true;
         };
     };
 
@@ -194,6 +205,7 @@
 
     # Enable supergfxd power daemon
     systemd.services.supergfxd.path = [ pkgs.pciutils ];
+    systemd.services.supergfxd.enable = true;
     services = {
         power-profiles-daemon.enable = true;
         supergfxd.enable = true;
@@ -240,7 +252,7 @@
 
     nix = {
         enable = true;
-        package = pkgs.lix;# pkgs.nixVersions.latest;
+        package = pkgs.nixVersions.latest; #pkgs.lix;
         # add some flake inputs to the nix-registry for nix search
         registry = {
             nixpkgs.flake = inputs.nixpkgs;

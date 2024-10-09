@@ -225,7 +225,7 @@
                         package = pkgs.llvmPackages_19.clang-tools;
                         #extraOptions = "-fexperimental-new-constant-interpreter";
                     };
-                    rust-analyzer = {
+                    rust_analyzer = {
                         enable = true;
                         package = pkgs.rust-analyzer-unwrapped;
                         installCargo = false;
@@ -240,7 +240,7 @@
                         enable = true;
                         package = pkgs.omnisharp-roslyn;
                     };
-                    csharp-ls = {
+                    csharp_ls = {
                         enable = false;
                         package = pkgs.csharp-ls;
                     };
@@ -250,7 +250,7 @@
                     cssls = {
                         enable = true;
                     };
-                    ts-ls = {
+                    ts_ls = {
                         enable = true;
                         #package = pkgs.nodePackages_latest.typescript-language-server;
                     };
