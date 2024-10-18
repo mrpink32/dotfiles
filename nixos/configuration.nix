@@ -417,7 +417,7 @@
             llvmPackages_19.libclang
             cargo
             rustc
-            (inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.master)
+            (inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.default)
             odin
             go
             jdk22
@@ -579,6 +579,7 @@
             razergenie
             r2modman
             wireshark
+            android-tools
             # custom packages
             # (import /mnt/data/repositories/wayland/src/default.nix)
             # (import /mnt/data/repositories/statusbar/c_test/default.nix)

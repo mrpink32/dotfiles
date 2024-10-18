@@ -266,7 +266,8 @@
             };
             zig = {
                 enable = true;
-                package = (inputs.zig.packages.${"x86_64-linux"}.master);
+                package = (inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.default);
+                #package = (inputs.zig.packages.${"x86_64-linux"}.default);
             };
         };
     };
