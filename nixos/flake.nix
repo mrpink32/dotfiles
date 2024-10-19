@@ -23,12 +23,9 @@
             url = "github:ilikefrogs101/nixpkgs/master";
             inputs.nixpkgs.follows = "nixpkgs";
         };
-        zig = {
-            url = "github:mitchellh/zig-overlay";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
+        zig.url = "github:mitchellh/zig-overlay";
         zls = {
-            url = "github:zigtools/zls/master";
+            url = "github:mrpink32/zls/master"; #github:zigtools/zls/master
             inputs.nixpkgs.follows = "nixpkgs";
         };
         nixos-cosmic = {
@@ -45,7 +42,7 @@
         #};
     };
 
-    outputs = {nixpkgs,lix-module,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,...} @ inputs:
+    outputs = {nixpkgs,lix-module,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,zig,...} @ inputs:
         let
             system = "x86_64-linux";
             overlay-stable = final: prev: {
@@ -88,6 +85,7 @@
                     ({ ... }: { nixpkgs.overlays = [ 
                         overlay-unstable
                         overlay-stable
+                        zig.overlays.default
                     ]; })
                     ./configuration.nix
                 ];

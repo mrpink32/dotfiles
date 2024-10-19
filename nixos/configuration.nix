@@ -370,6 +370,7 @@
         };
         gamescope.enable = true;
         gamemode.enable = true;
+        direnv.enable = true;
     };
 
     #packageGroups = import ../package-groups.nix { inherit pkgs; };
@@ -417,7 +418,8 @@
             llvmPackages_19.libclang
             cargo
             rustc
-            (inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.default)
+            #(inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.master)
+            pkgs.zigpkgs.master
             odin
             go
             jdk22
