@@ -1,8 +1,8 @@
 {
     description = "A very basic flake";
     inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/master";
-        #nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+        #nixpkgs.url = "github:NixOS/nixpkgs/master";
+        nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
         nixpkgs-unstable = {
             url = "github:NixOS/nixpkgs/nixpkgs-unstable";
             inputs.nixpkgs.follows = "nixpkgs";
@@ -26,6 +26,7 @@
         zig.url = "github:mitchellh/zig-overlay";
         zls = {
             url = "github:mrpink32/zls/master"; #github:zigtools/zls/master
+            #url = "git+file:///mnt/data/repositories/zls";
             inputs.nixpkgs.follows = "nixpkgs";
         };
         nixos-cosmic = {

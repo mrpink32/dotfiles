@@ -477,7 +477,7 @@
                     ms-azuretools.vscode-docker
                     ms-vscode-remote.remote-ssh
                     vscode-extensions.ms-dotnettools.csharp
-                    vscode-extensions.ms-dotnettools.csdevkit
+                    #vscode-extensions.ms-dotnettools.csdevkit
                     vscode-extensions.ms-dotnettools.vscode-dotnet-runtime
                 ];
             })
@@ -572,9 +572,9 @@
             cosmic-screenshot
             #unstable.freecad-wayland
             #stable.cura
-            unstable.kicad
+            stable.kicad
             steamtinkerlaunch
-            calibre
+            stable.calibre
             vesktop
             # Razer device management apps
             polychromatic
