@@ -570,6 +570,8 @@
             cosmic-edit
             cosmic-files
             cosmic-screenshot
+            #veloren
+            airshipper
             #unstable.freecad-wayland
             #stable.cura
             stable.kicad
