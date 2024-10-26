@@ -466,7 +466,7 @@
             jetbrains.writerside
             jetbrains.rust-rover
             jetbrains.idea-ultimate
-            #vscode
+            jetbrains-toolbox
             (vscode-with-extensions.override {
                 vscodeExtensions = with vscode-extensions; [
                     #ms-python.python
