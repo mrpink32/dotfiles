@@ -8,7 +8,7 @@
             inputs.nixpkgs.follows = "nixpkgs";
         };
         nixpkgs-stable = {
-            url = "github:NixOS/nixpkgs/release-24.05";
+            url = "github:NixOS/nixpkgs/nixos-24.05";
             inputs.nixpkgs.follows = "nixpkgs";
         };
         hyprland = {
