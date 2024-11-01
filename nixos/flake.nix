@@ -25,7 +25,7 @@
         };
         zig.url = "github:mitchellh/zig-overlay";
         zls = {
-            url = "github:mrpink32/zls/master"; #github:zigtools/zls/master
+            url = "github:zigtools/zls/master"; #github:mrpink32/zls/master
             #url = "git+file:///mnt/data/repositories/zls";
             inputs.nixpkgs.follows = "nixpkgs";
         };

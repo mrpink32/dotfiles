@@ -424,8 +424,8 @@
             pkgs.zigpkgs.master
             odin
             go
-            jdk22
-            jdk
+            openjdk23
+            openjdk
             (with dotnetCorePackages; combinePackages [
                 sdk_9_0
                 sdk_8_0
