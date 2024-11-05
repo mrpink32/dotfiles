@@ -13,7 +13,7 @@
     # Bootloader.
     boot = {
         kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
-        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ];
+        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
         kernel = {
             enable = true;
             sysctl = {
@@ -352,6 +352,7 @@
         hyprland = {
             enable = true;
             package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.system}.hyprland;
+            portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
             xwayland.enable = true;
         };
         hyprlock = {
@@ -527,6 +528,7 @@
             librewolf
             trilium-desktop
             heroic
+            rpcs3
             osu-lazer-bin
             protonvpn-gui
             protonvpn-cli
