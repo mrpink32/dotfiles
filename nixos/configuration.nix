@@ -196,8 +196,8 @@
         # Configure keymap in X11
         xkb = {
             model = "pc104";
-            layout = "us,dk";
-            variant = "dvorak,dvorak";
+            layout = "us,dk,gr";
+            variant = "dvorak,dvorak,polytonic";
             options = "caps:backspace,shift:both_capslock,grp:win_space_toggle";
         };
     };
