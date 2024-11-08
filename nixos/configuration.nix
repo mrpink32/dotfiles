@@ -374,6 +374,10 @@
         gamescope.enable = true;
         gamemode.enable = true;
         direnv.enable = true;
+        thunderbird = {
+            enable = true;
+            package = pkgs.thunderbird-latest-unwrapped;
+        };
     };
 
     #packageGroups = import ../package-groups.nix { inherit pkgs; };
