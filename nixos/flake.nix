@@ -43,7 +43,7 @@
         #};
     };
 
-    outputs = {nixpkgs,lix-module,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,zig,...} @ inputs:
+    outputs = {nixpkgs,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,zig,...} @ inputs:
         let
             system = "x86_64-linux";
             overlay-stable = final: prev: {
@@ -81,7 +81,7 @@
                             ];
                         };
                     }
-                    lix-module.nixosModules.default
+                    #lix-module.nixosModules.default
                     nixos-cosmic.nixosModules.default
                     ({ ... }: { nixpkgs.overlays = [ 
                         overlay-unstable

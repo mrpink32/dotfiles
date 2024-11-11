@@ -13,7 +13,7 @@
     # Bootloader.
     boot = {
         kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
-        kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
+        #kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
         kernel = {
             enable = true;
             sysctl = {
@@ -29,31 +29,41 @@
             efi.canTouchEfiVariables = true;
         };
         initrd = {
-            kernelModules = [ "nvidia" ];
+            #kernelModules = [ "nvidia" ];
             systemd.dbus.enable = true;
         };
         extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
+    };
+
+    fileSystems."/mnt/harddisk" = {
+        device = "/dev/disk/by-partuuid/3e845291-4adc-4412-9a11-68feff01da0e";
+        fsType = "ext4";
+    };
+
+    fileSystems."/mnt/data" = {
+        device = "/dev/disk/by-partuuid/5ade5046-c81a-4e13-8243-12f95819492d";
+        fsType = "btrfs";
     };
 
     # ----- hardware options -----
     hardware = {
         enableAllFirmware = true;
         enableRedistributableFirmware = true;
-        cpu.amd.updateMicrocode = true;
+        #cpu.amd.updateMicrocode = true;
 
         # ----- openrazer options -----
         openrazer.enable = true;
 
         # ----- bluetooth options -----
-        bluetooth = {
-            enable = true;
-            input = {
-                General = {
-                    ClassicBondedOnly = false;
-                };
-            };
-            #settings = {General = { Experimental = "true"; }; };
-        };
+        #bluetooth = {
+        #    enable = true;
+        #    input = {
+        #        General = {
+        #            ClassicBondedOnly = false;
+        #        };
+        #    };
+        #    #settings = {General = { Experimental = "true"; }; };
+        #};
 
         # ----- graphics options -----
         graphics = {
@@ -72,7 +82,7 @@
             # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
             # Only available from driver 515.43.04+
             # Do not disable this unless your GPU is unsupported or if you have a good reason to.
-            open = true;
+            open = false;
 
             # Enable the Nvidia settings menu,
             # accessible via `nvidia-settings`.
@@ -81,19 +91,19 @@
             # Modesetting is needed for most Wayland compositors
             modesetting.enable = true;
 
-            prime = {
-                #offload = {
-                #    enable = true;
-                #    enableOffloadCmd = true;
-                #};
-                sync.enable = true;
-                amdgpuBusId = "PCI:7:0:0";
-                nvidiaBusId = "PCI:1:0:0";
-            };
+            #prime = {
+            #    #offload = {
+            #    #    enable = true;
+            #    #    enableOffloadCmd = true;
+            #    #};
+            #    sync.enable = true;
+            #    amdgpuBusId = "PCI:7:0:0";
+            #    nvidiaBusId = "PCI:1:0:0";
+            #};
 
             # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
             powerManagement = {
-                enable = true;
+                enable = false;
                 # Fine-grained power management. Turns off GPU when not in use.
                 # Experimental and only works on modern Nvidia GPUs (Turing or newer).
                 finegrained = false;
@@ -105,29 +115,29 @@
         };
 
         # ----- AMDGPU options -----
-        amdgpu = {
-            initrd.enable = true;
-            opencl.enable = true;
-            #amdvlk = {
-            #    enable = true;
-            #    support32Bit.enable = true;
-            #    supportExperimental.enable = true;
-            #};
-        };
+        #amdgpu = {
+        #    initrd.enable = true;
+        #    opencl.enable = true;
+        #    #amdvlk = {
+        #    #    enable = true;
+        #    #    support32Bit.enable = true;
+        #    #    supportExperimental.enable = true;
+        #    #};
+        #};
     };
 
-    specialisation = {
-        travel.configuration = {
-            hardware.nvidia = {
-                prime.sync.enable = lib.mkForce false;
-                prime.offload = {
-                    enable = lib.mkForce true;
-                    enableOffloadCmd = lib.mkForce true;
-                };
-                powerManagement.finegrained = lib.mkForce true;
-            };
-        };
-    };
+    #specialisation = {
+    #    travel.configuration = {
+    #        hardware.nvidia = {
+    #            prime.sync.enable = lib.mkForce false;
+    #            prime.offload = {
+    #                enable = lib.mkForce true;
+    #                enableOffloadCmd = lib.mkForce true;
+    #            };
+    #            powerManagement.finegrained = lib.mkForce true;
+    #        };
+    #    };
+    #};
 
     # ----- Networking -----
     networking = {
@@ -178,7 +188,7 @@
             };
         };
         # Enable touchpad support (enabled default in most desktopManager).
-        libinput.enable = true;
+        #libinput.enable = true;
         desktopManager = {
             cosmic.enable = true;
             plasma6.enable = true;
@@ -204,27 +214,27 @@
     security.polkit.enable = true;
 
     # Enable supergfxd power daemon
-    systemd.services.supergfxd.path = [ pkgs.pciutils ];
-    systemd.services.supergfxd.enable = true;
-    services = {
-        power-profiles-daemon.enable = true;
-        supergfxd.enable = true;
-        asusd = {
-            enable = true;
-            enableUserService = true;
-            package = pkgs.asusctl;
-        };
-    };
+    #systemd.services.supergfxd.path = [ pkgs.pciutils ];
+    #systemd.services.supergfxd.enable = true;
+    #services = {
+    #    power-profiles-daemon.enable = true;
+    #    supergfxd.enable = true;
+    #    asusd = {
+    #        enable = true;
+    #        enableUserService = true;
+    #        package = pkgs.asusctl;
+    #    };
+    #};
 
     # Configure console keymap
     console.useXkbConfig = true;
 
     # Enable CUPS to print documents.
-    services.printing.enable = true;
+    #services.printing.enable = true;
 
     # Enable sound using pipewire.
-    hardware.pulseaudio.enable = false;
-    hardware.pulseaudio.support32Bit = false;
+    #hardware.pulseaudio.enable = false;
+    #hardware.pulseaudio.support32Bit = false;
     security.rtkit.enable = true;
     services.pipewire = {
         enable = true;
@@ -260,7 +270,7 @@
             nixpkgs-stable.flake = inputs.nixpkgs-stable;
             nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
             firefox-nightly.flake = inputs.firefox-nightly;
-            lix-module.flake = inputs.lix-module;
+            #lix-module.flake = inputs.lix-module;
         };
         settings.sandbox = true;
         # enable nix experimental features
@@ -339,10 +349,10 @@
             keyMode = "vi";
             baseIndex = 1;
         };
-        rog-control-center = {
-            enable = true;
-            autoStart = true;
-        };
+        #rog-control-center = {
+        #    enable = true;
+        #    autoStart = true;
+        #};
         nix-ld = {
             enable = true;
             libraries = with pkgs; [
@@ -376,7 +386,7 @@
         direnv.enable = true;
         thunderbird = {
             enable = true;
-            package = pkgs.thunderbird-latest-unwrapped;
+            package = pkgs.thunderbird-latest;
         };
     };
 
@@ -434,7 +444,6 @@
             (with dotnetCorePackages; combinePackages [
                 sdk_9_0
                 sdk_8_0
-                sdk_7_0
                 sdk_6_0
                 aspnetcore_9_0
                 aspnetcore_8_0
@@ -626,12 +635,28 @@
     };
 
     # Enable the OpenSSH daemon.
-    services.openssh.enable = false;
+    services.openssh = {
+        enable = true;
+        ports = [ 22 ];
+        allowSFTP = true;
+        sftpServerExecutable = "internal-sftp";
+    };
 
+    # Or disable the firewall altogether.
     networking.firewall.enable = true;
     # Open ports in the firewall.
-    # networking.firewall.allowedTCPPorts = [ 8080 ];
-    # networking.firewall.allowedUDPPorts = [ 51820 ];
+    networking.firewall.allowedTCPPorts = [ 25565 9000 80 21 22 20 ];
+    networking.firewall.allowedUDPPorts = [ 25565 9000 ];
+    
+    services.vsftpd = {
+        enable = true;
+        #cannot chroot && write
+        #chrootlocalUser = true;
+        writeEnable = true;
+        localUsers = true;
+        #userlist = [ "martyn" "cam" ];
+        #userlistEnable = true;
+    };
 
     environment.variables = {
         EDITOR = "nvim";
