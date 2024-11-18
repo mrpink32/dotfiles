@@ -14,6 +14,7 @@
     boot = {
         kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
         #kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
+        kernelParams = [ "nvidia_drm.fbdev=1" ];
         kernel = {
             enable = true;
             sysctl = {
@@ -167,14 +168,14 @@
             LC_TELEPHONE = "ja_JP.UTF-8";
             LC_TIME = "ja_JP.UTF-8";
         };
-        inputMethod = {
-            enable = true;
-            type = "fcitx5";
-            fcitx5 = {
-                waylandFrontend = true;
-                addons = with pkgs; [ fcitx5-mozc ];
-            };
-        };
+        #inputMethod = {
+        #    enable = true;
+        #    type = "fcitx5";
+        #    fcitx5 = {
+        #        waylandFrontend = true;
+        #        addons = with pkgs; [ fcitx5-mozc ];
+        #    };
+        #};
     };
 
     services = {
@@ -315,7 +316,7 @@
         extraPortals = [
             pkgs.xdg-utils
             pkgs.xdg-dbus-proxy
-            pkgs.xdg-desktop-portal-cosmic
+            #pkgs.xdg-desktop-portal-cosmic
             pkgs.kdePackages.xdg-desktop-portal-kde
         ];
     };
@@ -493,7 +494,7 @@
                     ms-azuretools.vscode-docker
                     ms-vscode-remote.remote-ssh
                     vscode-extensions.ms-dotnettools.csharp
-                    #vscode-extensions.ms-dotnettools.csdevkit
+                    vscode-extensions.ms-dotnettools.csdevkit
                     vscode-extensions.ms-dotnettools.vscode-dotnet-runtime
                 ];
             })
@@ -583,10 +584,10 @@
             rofi
             rofi-wayland
             # cosmic
-            cosmic-term
-            cosmic-edit
-            cosmic-files
-            cosmic-screenshot
+            #cosmic-term
+            #cosmic-edit
+            #cosmic-files
+            #cosmic-screenshot
             #veloren
             airshipper
             #unstable.freecad-wayland
