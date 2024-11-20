@@ -12,7 +12,7 @@
 
     # Bootloader.
     boot = {
-        kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
+        kernelPackages = pkgs.linuxPackages_6_11; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
         #kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
         kernelParams = [ "nvidia_drm.fbdev=1" ];
         kernel = {
