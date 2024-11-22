@@ -19,10 +19,10 @@
             url = "github:nix-community/nixvim/main";
             #inputs.nixpkgs.follows = "nixpkgs";
         };
-        nixpkgs-godot = {
-            url = "github:ilikefrogs101/nixpkgs/master";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
+        #nixpkgs-godot = {
+        #    url = "github:ilikefrogs101/nixpkgs/master";
+        #    inputs.nixpkgs.follows = "nixpkgs";
+        #};
         zig.url = "github:mitchellh/zig-overlay";
         zls = {
             url = "github:zigtools/zls/master"; #github:mrpink32/zls/master
