@@ -56,15 +56,15 @@
         openrazer.enable = true;
 
         # ----- bluetooth options -----
-        #bluetooth = {
-        #    enable = true;
-        #    input = {
-        #        General = {
-        #            ClassicBondedOnly = false;
-        #        };
-        #    };
-        #    #settings = {General = { Experimental = "true"; }; };
-        #};
+        bluetooth = {
+            enable = false;
+            input = {
+                General = {
+                    ClassicBondedOnly = false;
+                };
+            };
+            #settings = {General = { Experimental = "true"; }; };
+        };
 
         # ----- graphics options -----
         graphics = {
@@ -179,6 +179,20 @@
     };
 
     services = {
+        # Enable the X11 windowing system.
+        xserver = {
+            enable = true;
+            autorun = true;
+            # Load nvidia driver for Xorg and Wayland
+            videoDrivers = ["nvidia"]; #"amdgpu"
+            # Configure keymap in X11
+            xkb = {
+                model = "pc104";
+                layout = "us,dk,gr";
+                variant = "dvorak,dvorak,polytonic";
+                options = "caps:backspace,shift:both_capslock,grp:win_space_toggle";
+            };
+        };
         displayManager = {
             defaultSession = "hyprland";
             sddm = {
@@ -191,40 +205,25 @@
         # Enable touchpad support (enabled default in most desktopManager).
         #libinput.enable = true;
         desktopManager = {
-            cosmic.enable = true;
+            cosmic.enable = false;
             plasma6.enable = true;
         };
         #dockerRegistry.enable = true;
     };
 
-    # Enable the X11 windowing system.
-    services.xserver = {
-        enable = true;
-        autorun = true;
-        # Load nvidia driver for Xorg and Wayland
-        videoDrivers = ["nvidia"]; #"amdgpu"
-
-        # Configure keymap in X11
-        xkb = {
-            model = "pc104";
-            layout = "us,dk,gr";
-            variant = "dvorak,dvorak,polytonic";
-            options = "caps:backspace,shift:both_capslock,grp:win_space_toggle";
-        };
-    };
     security.polkit.enable = true;
 
     # Enable supergfxd power daemon
     #systemd.services.supergfxd.path = [ pkgs.pciutils ];
     #systemd.services.supergfxd.enable = true;
     #services = {
-    #    power-profiles-daemon.enable = true;
-    #    supergfxd.enable = true;
-    #    asusd = {
-    #        enable = true;
-    #        enableUserService = true;
-    #        package = pkgs.asusctl;
-    #    };
+    #    #power-profiles-daemon.enable = true;
+    #    #supergfxd.enable = true;
+    #    #asusd = {
+    #    #    enable = true;
+    #    #    enableUserService = true;
+    #    #    package = pkgs.asusctl;
+    #    #};
     #};
 
     # Configure console keymap
@@ -479,7 +478,7 @@
             ncspot
             kdePackages.kate
             jetbrains.clion
-            jetbrains.rider
+            unstable.jetbrains.rider
             jetbrains.writerside
             jetbrains.rust-rover
             jetbrains.idea-ultimate
@@ -500,6 +499,7 @@
             })
             lutris
             unityhub
+            godot_4-mono
             #(callPackage "${inputs.nixpkgs-godot}/pkgs/development/tools/godot/4/mono" { }) #.override { withTouch = false; })
             gparted
             ffmpeg_7
