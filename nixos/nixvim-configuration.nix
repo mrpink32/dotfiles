@@ -236,14 +236,14 @@
                         package = inputs.zls.packages.${pkgs.system}.zls;
                     };
                     nixd.enable = true;
-                    omnisharp = {
-                        enable = true;
-                        package = pkgs.omnisharp-roslyn;
-                    };
-                    csharp_ls = {
-                        enable = false;
-                        package = pkgs.csharp-ls;
-                    };
+                    #omnisharp = {
+                    #    enable = true;
+                    #    package = pkgs.omnisharp-roslyn;
+                    #};
+                    #csharp_ls = {
+                    #    enable = false;
+                    #    package = pkgs.csharp-ls;
+                    #};
                     html = {
                         enable = true;
                     };

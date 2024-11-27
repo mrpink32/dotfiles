@@ -258,6 +258,9 @@
     nixpkgs.config = {
         allowUnfree = true;
         allowBroken = false;
+        #permittedInsecurePackages = [
+        #    "dotnet-sdk-wrapped-7.0.410"
+        #];
     };
 
     nix = {
@@ -444,7 +447,6 @@
             (with dotnetCorePackages; combinePackages [
                 sdk_9_0
                 sdk_8_0
-                sdk_6_0
                 aspnetcore_9_0
                 aspnetcore_8_0
             ])
@@ -478,7 +480,25 @@
             ncspot
             kdePackages.kate
             jetbrains.clion
-            unstable.jetbrains.rider
+            (jetbrains.rider.overrideAttrs (attrs: {
+                postInstall = (attrs.postInstall or "") + lib.optionalString (stdenv.hostPlatform.isLinux) ''
+                    (
+                      cd $out/rider
+
+                      ls -d $PWD/plugins/cidr-debugger-plugin/bin/lldb/linux/*/lib/python3.8/lib-dynload/* |
+                      xargs patchelf \
+                        --replace-needed libssl.so.10 libssl.so \
+                        --replace-needed libcrypto.so.10 libcrypto.so \
+                        --replace-needed libcrypt.so.1 libcrypt.so
+
+                      for dir in lib/ReSharperHost/linux-*; do
+                        rm -rf $dir/dotnet
+                        ln -s ${dotnetCorePackages.sdk_9_0.unwrapped}/share/dotnet $dir/dotnet 
+                      done
+                    )
+                '';
+            }))
+
             jetbrains.writerside
             jetbrains.rust-rover
             jetbrains.idea-ultimate
