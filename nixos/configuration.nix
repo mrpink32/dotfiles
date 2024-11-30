@@ -36,16 +36,6 @@
         extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
     };
 
-    fileSystems."/mnt/harddisk" = {
-        device = "/dev/disk/by-partuuid/3e845291-4adc-4412-9a11-68feff01da0e";
-        fsType = "ext4";
-    };
-
-    fileSystems."/mnt/data" = {
-        device = "/dev/disk/by-partuuid/5ade5046-c81a-4e13-8243-12f95819492d";
-        fsType = "btrfs";
-    };
-
     # ----- hardware options -----
     hardware = {
         enableAllFirmware = true;
@@ -205,7 +195,7 @@
         # Enable touchpad support (enabled default in most desktopManager).
         #libinput.enable = true;
         desktopManager = {
-            cosmic.enable = false;
+            cosmic.enable = true;
             plasma6.enable = true;
         };
         #dockerRegistry.enable = true;
@@ -258,14 +248,12 @@
     nixpkgs.config = {
         allowUnfree = true;
         allowBroken = false;
-        #permittedInsecurePackages = [
-        #    "dotnet-sdk-wrapped-7.0.410"
-        #];
     };
 
     nix = {
         enable = true;
         package = pkgs.nixVersions.latest; #pkgs.lix;
+        channel.enable = false;
         # add some flake inputs to the nix-registry for nix search
         registry = {
             nixpkgs.flake = inputs.nixpkgs;
@@ -275,9 +263,12 @@
             firefox-nightly.flake = inputs.firefox-nightly;
             #lix-module.flake = inputs.lix-module;
         };
-        settings.sandbox = true;
-        # enable nix experimental features
-        settings.experimental-features = [ "nix-command" "flakes" ];
+        settings = {
+            sandbox = true;
+            # enable nix experimental features
+            experimental-features = [ "nix-command" "flakes" ];
+            max-jobs = 4;
+        };
     };
 
     documentation = {
@@ -498,7 +489,6 @@
                     )
                 '';
             }))
-
             jetbrains.writerside
             jetbrains.rust-rover
             jetbrains.idea-ultimate
