@@ -73,7 +73,7 @@
             # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
             # Only available from driver 515.43.04+
             # Do not disable this unless your GPU is unsupported or if you have a good reason to.
-            open = false;
+            open = true;
 
             # Enable the Nvidia settings menu,
             # accessible via `nvidia-settings`.
@@ -82,19 +82,19 @@
             # Modesetting is needed for most Wayland compositors
             modesetting.enable = true;
 
-            #prime = {
-            #    #offload = {
-            #    #    enable = true;
-            #    #    enableOffloadCmd = true;
-            #    #};
-            #    sync.enable = true;
-            #    amdgpuBusId = "PCI:7:0:0";
-            #    nvidiaBusId = "PCI:1:0:0";
-            #};
+            prime = {
+                #offload = {
+                #    enable = true;
+                #    enableOffloadCmd = true;
+                #};
+                sync.enable = true;
+                amdgpuBusId = "PCI:7:0:0";
+                nvidiaBusId = "PCI:1:0:0";
+            };
 
             # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
             powerManagement = {
-                enable = false;
+                enable = true;
                 # Fine-grained power management. Turns off GPU when not in use.
                 # Experimental and only works on modern Nvidia GPUs (Turing or newer).
                 finegrained = false;
@@ -117,18 +117,18 @@
         #};
     };
 
-    #specialisation = {
-    #    travel.configuration = {
-    #        hardware.nvidia = {
-    #            prime.sync.enable = lib.mkForce false;
-    #            prime.offload = {
-    #                enable = lib.mkForce true;
-    #                enableOffloadCmd = lib.mkForce true;
-    #            };
-    #            powerManagement.finegrained = lib.mkForce true;
-    #        };
-    #    };
-    #};
+    specialisation = {
+        travel.configuration = {
+            hardware.nvidia = {
+                prime.sync.enable = lib.mkForce false;
+                prime.offload = {
+                    enable = lib.mkForce true;
+                    enableOffloadCmd = lib.mkForce true;
+                };
+                powerManagement.finegrained = lib.mkForce true;
+            };
+        };
+    };
 
     # ----- Networking -----
     networking = {
@@ -239,7 +239,7 @@
     users.defaultUserShell = pkgs.zsh;
     users.users.mikkel = {
         isNormalUser = true;
-        home = "/mnt/data/home/mikkel";
+        #home = "/mnt/data/home/mikkel";
         description = "mikkel";
         extraGroups = [ "networkmanager" "wheel" "audio" "libvirtd" "bluetooth" "docker" ];
     };
@@ -321,7 +321,7 @@
             enableBashCompletion = true;
             autosuggestions.enable = true;
             shellAliases = {
-                repos = "cd /mnt/data/repositories";
+                repos = "cd /home/repositories";
                 build = "nix-build";
                 update-inputs = "nix flake update /etc/nixos";
                 list-profiles = "nix-env --list-generations -p /nix/var/nix/profiles/system";
@@ -331,7 +331,7 @@
         bash = {
             completion.enable = true;
             shellAliases = {
-                repos = "cd /mnt/data/repositories";
+                repos = "cd /home/repositories";
                 build = "nix-build";
                 update-flakes = "nix flake update /etc/nixos";
                 list-profiles = "nix-env --list-generations -p /nix/var/nix/profiles/system";
@@ -528,6 +528,10 @@
             mono
             lua
             zip
+            (discord-canary.override {
+                withOpenASAR = true;
+                withVencord = true;
+            })
             (discord.override {
                 withOpenASAR = true;
                 withVencord = true;
