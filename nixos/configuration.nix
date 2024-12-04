@@ -415,12 +415,6 @@
             anki
             zoxide
             mercurial
-            #clang_18
-            #clang-tools_18
-            #lld_18
-            #lldb_18
-            #llvm_18
-            #libclang
             llvmPackages_19.clang
             llvmPackages_19.clang-tools
             llvmPackages_19.lld
@@ -429,6 +423,7 @@
             llvmPackages_19.libclang
             cargo
             rustc
+            R
             #(inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.master)
             pkgs.zigpkgs.master
             odin
@@ -471,24 +466,23 @@
             ncspot
             kdePackages.kate
             jetbrains.clion
-            (jetbrains.rider.overrideAttrs (attrs: {
-                postInstall = (attrs.postInstall or "") + lib.optionalString (stdenv.hostPlatform.isLinux) ''
-                    (
-                      cd $out/rider
-
-                      ls -d $PWD/plugins/cidr-debugger-plugin/bin/lldb/linux/*/lib/python3.8/lib-dynload/* |
-                      xargs patchelf \
-                        --replace-needed libssl.so.10 libssl.so \
-                        --replace-needed libcrypto.so.10 libcrypto.so \
-                        --replace-needed libcrypt.so.1 libcrypt.so
-
-                      for dir in lib/ReSharperHost/linux-*; do
-                        rm -rf $dir/dotnet
-                        ln -s ${dotnetCorePackages.sdk_9_0.unwrapped}/share/dotnet $dir/dotnet 
-                      done
-                    )
-                '';
-            }))
+            jetbrains.rider
+            #(jetbrains.rider.overrideAttrs (attrs: {
+            #    postInstall = (attrs.postInstall or "") + lib.optionalString (stdenv.hostPlatform.isLinux) ''
+            #        (
+            #          cd $out/rider
+            #          ls -d $PWD/plugins/cidr-debugger-plugin/bin/lldb/linux/*/lib/python3.8/lib-dynload/* |
+            #          xargs patchelf \
+            #            --replace-needed libssl.so.10 libssl.so \
+            #            --replace-needed libcrypto.so.10 libcrypto.so \
+            #            --replace-needed libcrypt.so.1 libcrypt.so
+            #          for dir in lib/ReSharperHost/linux-*; do
+            #            rm -rf $dir/dotnet
+            #            ln -s ${dotnetCorePackages.sdk_9_0.unwrapped}/share/dotnet $dir/dotnet 
+            #          done
+            #        )
+            #    '';
+            #}))
             jetbrains.writerside
             jetbrains.rust-rover
             jetbrains.idea-ultimate
@@ -630,7 +624,8 @@
             noto-fonts-cjk-sans
             noto-fonts-cjk-serif
             noto-fonts
-            (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+            nerd-fonts.jetbrains-mono
+            #(nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
         ];
         fontDir.enable = true;
         fontconfig.enable = true;

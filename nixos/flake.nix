@@ -1,8 +1,9 @@
 {
     description = "A very basic flake";
     inputs = {
-        #nixpkgs.url = "github:NixOS/nixpkgs/master";
-        nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+        nixpkgs.url = "github:NixOS/nixpkgs/master";
+        #nixpkgs.url = "github:mrpink32/nixpkgs/master";
+        #nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
         nixpkgs-unstable = {
             url = "github:NixOS/nixpkgs/nixpkgs-unstable";
             inputs.nixpkgs.follows = "nixpkgs";
