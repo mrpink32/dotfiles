@@ -34,8 +34,8 @@
             hlsearch = false;
             incsearch = true;
             termguicolors = true;
-            scrolloff = 12;
-            sidescrolloff = 12;
+            scrolloff = 15;
+            sidescrolloff = 15;
             signcolumn = "yes";
             updatetime = 120;
             colorcolumn = "80";

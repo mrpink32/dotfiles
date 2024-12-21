@@ -2,7 +2,6 @@
     description = "A very basic flake";
     inputs = {
         nixpkgs.url = "github:NixOS/nixpkgs/master";
-        #nixpkgs.url = "github:mrpink32/nixpkgs/master";
         #nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
         nixpkgs-unstable = {
             url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -18,21 +17,18 @@
         };
         nixvim = {
             url = "github:nix-community/nixvim/main";
-            #inputs.nixpkgs.follows = "nixpkgs";
         };
-        #nixpkgs-godot = {
-        #    url = "github:ilikefrogs101/nixpkgs/master";
-        #    inputs.nixpkgs.follows = "nixpkgs";
-        #};
+        nixpkgs-godot = {
+            #url = "github:NixOS/nixpkgs#09b9c34"; #355753#"github:ilikefrogs101/nixpkgs/master";
+            url = "github:nixos/nixpkgs?rev=b9cbab7e1bca23161e6da701a8eb6294230a4f05"; #dd51f52372a20a93c219e8216fe528a648ffcbf4
+        };
         zig.url = "github:mitchellh/zig-overlay";
         zls = {
             url = "github:zigtools/zls/master"; #github:mrpink32/zls/master
-            #url = "git+file:///mnt/data/repositories/zls";
             inputs.nixpkgs.follows = "nixpkgs";
         };
         nixos-cosmic = {
             url = "github:lilyinstarlight/nixos-cosmic";
-            #inputs.nixpkgs.follows = "nixpkgs";
         };
         firefox-nightly = {
             url = "github:nix-community/flake-firefox-nightly";
@@ -44,7 +40,7 @@
         #};
     };
 
-    outputs = {nixpkgs,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,zig,...} @ inputs:
+    outputs = {nixpkgs,nixos-cosmic,nixpkgs-stable,nixpkgs-unstable,nixpkgs-godot,zig,...} @ inputs:
         let
             system = "x86_64-linux";
             overlay-stable = final: prev: {
@@ -59,6 +55,14 @@
                 #unstable = nixpkgs-unstable.legacyPackages.${prev.system};
                 # use this variant if unfree packages are needed:
                 unstable = import nixpkgs-unstable {
+                    inherit system;
+                    config.allowUnfree = true;
+                };
+            };
+            overlay-godot = final: prev: {
+                #godot = nixpkgs-unstable.legacyPackages.${prev.system};
+                # use this variant if unfree packages are needed:
+                godot = import nixpkgs-godot {
                     inherit system;
                     config.allowUnfree = true;
                 };
@@ -87,6 +91,7 @@
                     ({ ... }: { nixpkgs.overlays = [ 
                         overlay-unstable
                         overlay-stable
+                        overlay-godot
                         zig.overlays.default
                     ]; })
                     ./configuration.nix

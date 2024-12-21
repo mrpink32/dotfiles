@@ -12,7 +12,7 @@
 
     # Bootloader.
     boot = {
-        kernelPackages = pkgs.linuxPackages_6_11; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
+        kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
         #kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
         kernelParams = [ "nvidia_drm.fbdev=1" ];
         kernel = {
@@ -47,7 +47,7 @@
 
         # ----- bluetooth options -----
         bluetooth = {
-            enable = false;
+            enable = true;
             input = {
                 General = {
                     ClassicBondedOnly = false;
@@ -119,6 +119,7 @@
 
     specialisation = {
         travel.configuration = {
+            services.xserver.videoDrivers = ["amdgpu"];
             hardware.nvidia = {
                 prime.sync.enable = lib.mkForce false;
                 prime.offload = {
@@ -201,8 +202,6 @@
         #dockerRegistry.enable = true;
     };
 
-    security.polkit.enable = true;
-
     # Enable supergfxd power daemon
     #systemd.services.supergfxd.path = [ pkgs.pciutils ];
     #systemd.services.supergfxd.enable = true;
@@ -225,6 +224,8 @@
     # Enable sound using pipewire.
     #hardware.pulseaudio.enable = false;
     #hardware.pulseaudio.support32Bit = false;
+
+    security.polkit.enable = true;
     security.rtkit.enable = true;
     services.pipewire = {
         enable = true;
@@ -237,6 +238,9 @@
 
     # Define a user account. Don't forget to set a password with ‘passwd’.
     users.defaultUserShell = pkgs.zsh;
+    users.groups = {
+        libvirtd.members = [ "mikkel" ];
+    };
     users.users.mikkel = {
         isNormalUser = true;
         #home = "/mnt/data/home/mikkel";
@@ -353,10 +357,12 @@
                 # libraries to make available for dynamicly linked programs
             ];
         };
+        #uwsm.enable = true;
         hyprland = {
             enable = true;
             package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.system}.hyprland;
             portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+            #withUWSM = true;
             xwayland.enable = true;
         };
         hyprlock = {
@@ -381,6 +387,9 @@
         thunderbird = {
             enable = true;
             package = pkgs.thunderbird-latest;
+        };
+        virt-manager = {
+            enable = true;
         };
     };
 
@@ -443,8 +452,6 @@
             # dependencies
             glibc.dev
             libGLU.dev
-            SDL2.dev
-            freetype.dev
             alsa-oss
             alsa-lib.dev
             libpulseaudio.dev
@@ -503,8 +510,7 @@
             })
             lutris
             unityhub
-            godot_4-mono
-            #(callPackage "${inputs.nixpkgs-godot}/pkgs/development/tools/godot/4/mono" { }) #.override { withTouch = false; })
+            godot.godot_4-mono
             gparted
             ffmpeg_7
             gnumake
@@ -555,7 +561,6 @@
             protonvpn-gui
             protonvpn-cli
             #virtual manager
-            virt-manager
             qemu
             qemu-utils
             virglrenderer
@@ -563,6 +568,7 @@
             #other
             gimp
             krita
+            blender
             drawio
             obs-studio
             lshw
@@ -588,15 +594,8 @@
             fuzzel
             playerctl
             hyprpaper
-            xwaylandvideobridge
             rofi
             rofi-wayland
-            # cosmic
-            #cosmic-term
-            #cosmic-edit
-            #cosmic-files
-            #cosmic-screenshot
-            #veloren
             airshipper
             #unstable.freecad-wayland
             #stable.cura
@@ -604,7 +603,6 @@
             steamtinkerlaunch
             stable.calibre
             vesktop
-            # Razer device management apps
             polychromatic
             razergenie
             r2modman
