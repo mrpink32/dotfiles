@@ -13,9 +13,3 @@ G90 ;Absolute positionning
 G1 X0 Y{machine_depth} ;Present print
 M84 X Y E ;Disable all steppers but Z
 M109 R50 ;Wait for nozzle temp to be 50.
-; M300 S440 P400 ; plays a tone at 440 Hz for 200 ms
-G4 P800
-; M300 S440 P400 ; plays a tone at 440 Hz for 200 ms
-G4 P800
-; M300 S440 P400 ; plays a tone at 440 Hz for 200 ms
-G4 P800
