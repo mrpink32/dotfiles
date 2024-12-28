@@ -19,6 +19,7 @@
             enable = true;
             sysctl = {
                 "vm.max_map_count" = 2147483642;
+                "vm.swappiness" = 10;
             };
             features = {
                 #rust = true;
@@ -597,12 +598,13 @@
             rofi
             rofi-wayland
             airshipper
-            #unstable.freecad-wayland
+            freecad-wayland
             #stable.cura
             stable.kicad
             steamtinkerlaunch
             stable.calibre
             vesktop
+            mangohud
             polychromatic
             razergenie
             r2modman
