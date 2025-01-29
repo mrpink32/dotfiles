@@ -14,7 +14,10 @@
     boot = {
         kernelPackages = pkgs.linuxPackages_latest; #pkgs.linuxPackages_6_1; #pkgs.linuxPackages_latest; #pkgs.linuxPackages_lqx #pkgs.xanmod_latest;
         #kernelParams = [ "processor.max_cstate=1" "intel_idle.max_cstate=0" "amdgpu.mcbp=0" "preempt=full" ]; #
-        kernelParams = [ "nvidia_drm.fbdev=1" ];
+        kernelParams = [
+            "nvidia_drm.fbdev=1"
+            "nvidia_drm.modeset=1"
+        ];
         kernel = {
             enable = true;
             sysctl = {
@@ -160,14 +163,14 @@
             LC_TELEPHONE = "ja_JP.UTF-8";
             LC_TIME = "ja_JP.UTF-8";
         };
-        #inputMethod = {
-        #    enable = true;
-        #    type = "fcitx5";
-        #    fcitx5 = {
-        #        waylandFrontend = true;
-        #        addons = with pkgs; [ fcitx5-mozc ];
-        #    };
-        #};
+        inputMethod = {
+            enable = true;
+            type = "fcitx5";
+            fcitx5 = {
+                waylandFrontend = true;
+                addons = with pkgs; [ fcitx5-mozc ];
+            };
+        };
     };
 
     services = {
@@ -220,7 +223,7 @@
     console.useXkbConfig = true;
 
     # Enable CUPS to print documents.
-    #services.printing.enable = true;
+    services.printing.enable = true;
 
     # Enable sound using pipewire.
     #hardware.pulseaudio.enable = false;
@@ -384,7 +387,11 @@
         };
         gamescope.enable = true;
         gamemode.enable = true;
-        direnv.enable = true;
+        direnv = {
+            enable = true;
+            loadInNixShell = true;
+            enableZshIntegration = true;
+        };
         thunderbird = {
             enable = true;
             package = pkgs.thunderbird-latest;
@@ -448,7 +455,6 @@
             ])
             dotnetPackages.Nuget
             nodePackages_latest.nodejs
-            #nodejs_22
             typescript
             # dependencies
             glibc.dev
@@ -530,7 +536,7 @@
             lua
             zip
             (discord-canary.override {
-                withOpenASAR = true;
+                #withOpenASAR = true;
                 withVencord = true;
             })
             (discord.override {
@@ -541,7 +547,7 @@
             spotify
             nasm
             lf
-            slic3r
+            #slic3r
             btop
             prismlauncher
             (python313.withPackages(ps: with ps; [
@@ -576,8 +582,8 @@
             steam-tui
             bluez
             bluez-tools
-            gtk4
-            gtk4-layer-shell
+            #gtk4
+            #gtk4-layer-shell
             kdePackages.dolphin
             kdePackages.ark
             kdePackages.ktorrent
@@ -597,6 +603,9 @@
             hyprpaper
             rofi
             rofi-wayland
+
+            swww
+
             airshipper
             freecad-wayland
             #stable.cura
@@ -610,9 +619,6 @@
             r2modman
             wireshark
             android-tools
-            # custom packages
-            # (import /mnt/data/repositories/wayland/src/default.nix)
-            # (import /mnt/data/repositories/statusbar/c_test/default.nix)
         ];
     };
 
@@ -646,9 +652,9 @@
 
     # Enable the OpenSSH daemon.
     services.openssh = {
-        enable = true;
+        enable = false;
         ports = [ 22 ];
-        allowSFTP = true;
+        allowSFTP = false;
         sftpServerExecutable = "internal-sftp";
     };
 
