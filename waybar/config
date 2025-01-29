@@ -7,7 +7,7 @@
         "margin-right": 0,
         "spacing": 5, // Gaps between modules (4px)
         "modules-left": ["cpu", "memory", "network", "temperature", "hyprland/workspaces"], // "custom/power-menu"
-        "modules-center": [], // "custom/spotify"
+        "modules-center": ["hyprland/window"], // "custom/spotify"
         "modules-right": ["tray", "custom/power-profile", "backlight", "pulseaudio", "battery", "clock"],
 
         "hyprland/workspaces": {
@@ -30,9 +30,9 @@
             }
         },
 
-        // "hyprland/window": {
-        //     "format": "{}"
-        // },
+        "hyprland/window": {
+            "format": "{}"
+        },
 
         "tray": {
             "spacing": 10,
