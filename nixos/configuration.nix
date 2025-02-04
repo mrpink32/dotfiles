@@ -597,6 +597,8 @@
             jstest-gtk
             # wm stuff
             waybar
+            pavucontrol
+            ncpamixer
             dunst
             fuzzel
             playerctl
