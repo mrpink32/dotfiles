@@ -351,10 +351,10 @@
             keyMode = "vi";
             baseIndex = 1;
         };
-        #rog-control-center = {
-        #    enable = true;
-        #    autoStart = true;
-        #};
+        rog-control-center = {
+            enable = true;
+            autoStart = true;
+        };
         nix-ld = {
             enable = true;
             libraries = with pkgs; [
