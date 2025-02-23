@@ -24,7 +24,7 @@
         };
         zig.url = "github:mitchellh/zig-overlay";
         zls = {
-            url = "github:zigtools/zls/master"; #github:mrpink32/zls/master
+            url = "github:zigtools/zls/master";
             inputs.nixpkgs.follows = "nixpkgs";
         };
         nixos-cosmic = {

@@ -189,7 +189,7 @@
             };
         };
         displayManager = {
-            defaultSession = "hyprland";
+            defaultSession = "cosmic";
             sddm = {
                 enable = true;
                 wayland.enable = true;
@@ -361,12 +361,12 @@
                 # libraries to make available for dynamicly linked programs
             ];
         };
-        #uwsm.enable = true;
+        uwsm.enable = true;
         hyprland = {
             enable = true;
             package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.system}.hyprland;
             portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-            #withUWSM = true;
+            withUWSM = true;
             xwayland.enable = true;
         };
         hyprlock = {
@@ -445,8 +445,10 @@
             pkgs.zigpkgs.master
             odin
             go
-            openjdk23
             openjdk
+            openjdk8
+            openjdk21
+            openjdk23
             (with dotnetCorePackages; combinePackages [
                 sdk_9_0
                 sdk_8_0
@@ -598,7 +600,7 @@
             # wm stuff
             waybar
             pavucontrol
-            ncpamixer
+            #ncpamixer
             dunst
             fuzzel
             playerctl
