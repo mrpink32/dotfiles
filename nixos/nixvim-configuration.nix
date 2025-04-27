@@ -236,6 +236,14 @@
                         package = inputs.zls.packages.${pkgs.system}.zls;
                     };
                     nixd.enable = true;
+                    glsl_analyzer = {
+                        enable = true;
+                        autostart = true;
+                    };
+                    #glslls = {
+                    #    enable = true;
+                    #    autostart = true;
+                    #};
                     #omnisharp = {
                     #    enable = true;
                     #    package = pkgs.omnisharp-roslyn;
@@ -248,6 +256,9 @@
                         enable = true;
                     };
                     cssls = {
+                        enable = true;
+                    };
+                    htmx = {
                         enable = true;
                     };
                     ts_ls = {
@@ -266,8 +277,12 @@
             };
             zig = {
                 enable = true;
-                package = pkgs.zigpkgs.master;
+                #package = (inputs.nixpkgs-zig.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zig_0_14);
+                #package = pkgs.zigpkgs.master;
                 #package = (inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.master);
+            };
+            markdown-preview = {
+                enable = true;
             };
         };
     };

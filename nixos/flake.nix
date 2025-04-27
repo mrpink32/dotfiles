@@ -1,19 +1,22 @@
 {
     description = "A very basic flake";
     inputs = {
-        nixpkgs.url = "github:NixOS/nixpkgs/master";
+        nixpkgs = {
+            #url = "github:NixOS/nixpkgs/master";
+            #url = "github:nixos/nixpkgs?ref=master";
+            url = "github:nixos/nixpkgs?ref=nixos-unstable";
+            follows = "nixos-cosmic/nixpkgs";
+        };
+        #nixpkgs-zig.url = "github:RossComputerGuy/nixpkgs?ref=feat/zig-0.14";
         #nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
         nixpkgs-unstable = {
             url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-            inputs.nixpkgs.follows = "nixpkgs";
         };
         nixpkgs-stable = {
             url = "github:NixOS/nixpkgs/nixos-24.05";
-            inputs.nixpkgs.follows = "nixpkgs";
         };
         hyprland = {
             url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-            inputs.nixpkgs.follows = "nixpkgs";
         };
         nixvim = {
             url = "github:nix-community/nixvim/main";
@@ -24,15 +27,13 @@
         };
         zig.url = "github:mitchellh/zig-overlay";
         zls = {
-            url = "github:zigtools/zls/master";
-            inputs.nixpkgs.follows = "nixpkgs";
+            url = "github:mrpink32/zls/master";
         };
         nixos-cosmic = {
             url = "github:lilyinstarlight/nixos-cosmic";
         };
         firefox-nightly = {
             url = "github:nix-community/flake-firefox-nightly";
-            inputs.nixpkgs.follows = "nixpkgs";
         };
         #lix-module = {
         #    url = "https://git.lix.systems/lix-project/nixos-module/archive/2.91.0.tar.gz";

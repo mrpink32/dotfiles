@@ -44,10 +44,10 @@
     hardware = {
         enableAllFirmware = true;
         enableRedistributableFirmware = true;
-        #cpu.amd.updateMicrocode = true;
+        cpu.amd.updateMicrocode = true;
 
         # ----- openrazer options -----
-        openrazer.enable = true;
+        openrazer.enable = false;
 
         # ----- bluetooth options -----
         bluetooth = {
@@ -110,27 +110,30 @@
         };
 
         # ----- AMDGPU options -----
-        #amdgpu = {
-        #    initrd.enable = true;
-        #    opencl.enable = true;
-        #    #amdvlk = {
-        #    #    enable = true;
-        #    #    support32Bit.enable = true;
-        #    #    supportExperimental.enable = true;
-        #    #};
-        #};
+        amdgpu = {
+            initrd.enable = true;
+            opencl.enable = true;
+            #amdvlk = {
+            #    enable = true;
+            #    support32Bit.enable = true;
+            #    supportExperimental.enable = true;
+            #};
+        };
+
+        opentabletdriver.enable = true;
     };
 
     specialisation = {
         travel.configuration = {
             services.xserver.videoDrivers = ["amdgpu"];
             hardware.nvidia = {
+                modesetting.enable = lib.mkForce false;
                 prime.sync.enable = lib.mkForce false;
                 prime.offload = {
-                    enable = lib.mkForce true;
-                    enableOffloadCmd = lib.mkForce true;
+                    enable = lib.mkForce false;
+                    enableOffloadCmd = lib.mkForce false;
                 };
-                powerManagement.finegrained = lib.mkForce true;
+                powerManagement.finegrained = lib.mkForce false;
             };
         };
     };
@@ -187,14 +190,15 @@
                 variant = "dvorak,dvorak,polytonic";
                 options = "caps:backspace,shift:both_capslock,grp:win_space_toggle";
             };
+            wacom.enable = true;
         };
         displayManager = {
+            enable = true;
             defaultSession = "cosmic";
+            ly.enable = true;
             sddm = {
-                enable = true;
+                enable = false;
                 wayland.enable = true;
-                #package = pkgs.kdePackages.sddm;
-                #enableHidpi = true;
             };
         };
         # Enable touchpad support (enabled default in most desktopManager).
@@ -268,6 +272,7 @@
 	        hyprland.flake = inputs.hyprland;
             nixpkgs-stable.flake = inputs.nixpkgs-stable;
             nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
+            #nixpkgs-zig.flake = inputs.nixpkgs-zig;
             firefox-nightly.flake = inputs.firefox-nightly;
             #lix-module.flake = inputs.lix-module;
         };
@@ -333,6 +338,7 @@
                 build = "nix-build";
                 update-inputs = "nix flake update /etc/nixos";
                 list-profiles = "nix-env --list-generations -p /nix/var/nix/profiles/system";
+                gamer = "git";
             };
             #shellInit = "fastfetch";
         };
@@ -440,9 +446,10 @@
             llvmPackages_19.libclang
             cargo
             rustc
+            pandoc_3_6
             R
-            #(inputs.zig.packages.${pkgs.stdenv.hostPlatform.system}.master)
-            pkgs.zigpkgs.master
+            #(inputs.nixpkgs-zig.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zig_0_14)
+            #pkgs.zigpkgs.master
             odin
             go
             openjdk
@@ -554,6 +561,7 @@
             prismlauncher
             (python313.withPackages(ps: with ps; [
                 pip
+                matplotlib
             ]))
             coreutils
             libreoffice
@@ -561,14 +569,15 @@
             vlc
             mpv
             inputs.firefox-nightly.packages.${pkgs.system}.firefox-nightly-bin
-            firefox-devedition
+            #firefox-devedition
             librewolf
+            ladybird
             trilium-desktop
             heroic
             rpcs3
             osu-lazer-bin
-            protonvpn-gui
-            protonvpn-cli
+            #protonvpn-gui
+            #protonvpn-cli
             #virtual manager
             qemu
             qemu-utils
@@ -611,9 +620,10 @@
             swww
 
             airshipper
+            #vintagestory
             freecad-wayland
             #stable.cura
-            stable.kicad
+            #kicad
             steamtinkerlaunch
             stable.calibre
             vesktop
@@ -623,6 +633,8 @@
             r2modman
             wireshark
             android-tools
+
+            qpwgraph
         ];
     };
 

@@ -16,26 +16,6 @@ rec {
         xterm
     ];
 
-    py27 = [
-        pythonFull
-        python27Packages.chameleon
-        python27Packages.colander
-        python27Packages.deform
-        python27Packages.ipython
-        python27Packages.jinja2
-        python27Packages.lxml
-        python27Packages.pyramid
-        python27Packages.sphinx
-        python27Packages.sqlite3
-        python27Packages.virtualenv
-        python27Packages.epc
-        python27Packages.jedi
-        python27Packages.markdown
-        python27Packages.readline
-        python27Packages.recursivePthLoader
-        python27Packages.rope
-    ];
-
     py34 = [
         python34Packages.chameleon
         python34Packages.colander
@@ -54,7 +34,7 @@ rec {
         python34Packages.recursivePthLoader
     ];
 
-    py = py27 ++ py34 ++ [pylint];
+    py = py34 ++ [pylint];
 
     haskellXmonadPkgs = [
         haskellPackages.haskellPlatform
@@ -181,21 +161,6 @@ rec {
         xlsfonts
     ];
 
-    X = [
-        feh
-        keymon
-        mesa
-        xclip
-        xfce.xfce4_power_manager 
-        xkeyboard_config
-        xlibs.xev
-        xlibs.xkbcomp
-        xlibs.xmessage
-        xlibs.xmodmap
-        xscreensaver
-        xsel
-    ];
-
     sysUtils = [
         acpi
         acpitool
@@ -242,7 +207,7 @@ rec {
         kde4.kdevplatform
     ];
 
-    desktop = internet ++ graphics ++ multimedia ++ X ++ haskellXmonadPkgs ++ terminals;
+    desktop = internet ++ graphics ++ multimedia ++ haskellXmonadPkgs ++ terminals;
     dev = vcs ++ text ++ py ++ filesystem ++ database;
     utils = sysUtils ++ compressionUtils ++ genericUtils;
 }
