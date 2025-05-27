@@ -200,6 +200,7 @@
                 enable = false;
                 wayland.enable = true;
             };
+            cosmic-greeter.enable = false;
         };
         # Enable touchpad support (enabled default in most desktopManager).
         #libinput.enable = true;
@@ -367,12 +368,12 @@
                 # libraries to make available for dynamicly linked programs
             ];
         };
-        uwsm.enable = true;
+        uwsm.enable = false;
         hyprland = {
             enable = true;
             package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.system}.hyprland;
             portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-            withUWSM = true;
+            withUWSM = false;
             xwayland.enable = true;
         };
         hyprlock = {
@@ -446,19 +447,20 @@
             llvmPackages_19.libclang
             cargo
             rustc
-            pandoc_3_6
+            pandoc
             R
             #(inputs.nixpkgs-zig.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zig_0_14)
             #pkgs.zigpkgs.master
-            odin
             go
             openjdk
             openjdk8
             openjdk21
             openjdk23
             (with dotnetCorePackages; combinePackages [
+                sdk_10_0
                 sdk_9_0
                 sdk_8_0
+                aspnetcore_10_0
                 aspnetcore_9_0
                 aspnetcore_8_0
             ])
@@ -545,7 +547,7 @@
             lua
             zip
             (discord-canary.override {
-                #withOpenASAR = true;
+                withOpenASAR = true;
                 withVencord = true;
             })
             (discord.override {
@@ -584,7 +586,8 @@
             virglrenderer
             OVMFFull
             #other
-            gimp
+            #gimp
+            gimp3
             krita
             blender
             drawio

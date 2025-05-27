@@ -265,11 +265,11 @@
                         enable = true;
                         #package = pkgs.nodePackages_latest.typescript-language-server;
                     };
-                    ols = {
-                        enable = true;
-                        package = pkgs.ols;
-                        autostart = true;
-                    };
+                    #ols = {
+                    #    enable = true;
+                    #    package = pkgs.ols;
+                    #    autostart = true;
+                    #};
                 };
             };
             lint = {
