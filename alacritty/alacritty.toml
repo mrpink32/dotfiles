@@ -1,10 +1,37 @@
+[general]
 live_config_reload = true
-# [shell]
-# program = "/bin/zsh"
+
+[env]
 
 [window]
 dynamic_padding = true
-# opacity = 0.5
+decorations = "None"
+level = "Normal"
+
+[scrolling]
+
+[font]
+
+[colors]
+
+[bell]
+
+[selection]
+save_to_clipboard = false
+
+[cursor]
+blink_interval = 750
+unfocused_hollow = true
+thickness = 0.10
+
+[terminal]
 
 [mouse]
 hide_when_typing = true
+
+[hints]
+
+[keyboard]
+
+[debug]
+render_timer = false
