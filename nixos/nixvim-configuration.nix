@@ -240,6 +240,10 @@
                         enable = true;
                         autostart = true;
                     };
+                    #slangd = {
+                    #    enable = true;
+                    #    autostart = true;
+                    #};
                     #glslls = {
                     #    enable = true;
                     #    autostart = true;
@@ -264,6 +268,10 @@
                     ts_ls = {
                         enable = true;
                         #package = pkgs.nodePackages_latest.typescript-language-server;
+                    };
+                    angularls = {
+                        enable = true;
+                        package = pkgs.angular-language-server;
                     };
                     #ols = {
                     #    enable = true;

@@ -25,7 +25,6 @@
                 "vm.swappiness" = 10;
             };
             features = {
-                #rust = true;
                 debug = true;
             };
         };
@@ -34,11 +33,12 @@
             efi.canTouchEfiVariables = true;
         };
         initrd = {
-            #kernelModules = [ "nvidia" ];
             systemd.dbus.enable = true;
         };
         extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_beta ];
     };
+
+    powerManagement.enable = true;
 
     # ----- hardware options -----
     hardware = {
@@ -125,15 +125,15 @@
 
     specialisation = {
         travel.configuration = {
-            services.xserver.videoDrivers = ["amdgpu"];
+            #services.xserver.videoDrivers = ["amdgpu"];
             hardware.nvidia = {
-                modesetting.enable = lib.mkForce false;
+                #modesetting.enable = lib.mkForce true;
                 prime.sync.enable = lib.mkForce false;
                 prime.offload = {
-                    enable = lib.mkForce false;
-                    enableOffloadCmd = lib.mkForce false;
+                    enable = lib.mkForce true;
+                    enableOffloadCmd = lib.mkForce true;
                 };
-                powerManagement.finegrained = lib.mkForce false;
+                powerManagement.finegrained = lib.mkForce true;
             };
         };
     };
@@ -160,7 +160,7 @@
             LC_IDENTIFICATION = "ja_JP.UTF-8";
             LC_MEASUREMENT = "ja_JP.UTF-8";
             LC_MONETARY = "ja_JP.UTF-8";
-            LC_NAME = "ja_JP.UTF-8";
+            LC_NAME = "en_US.UTF-8";
             LC_NUMERIC = "ja_JP.UTF-8";
             LC_PAPER = "ja_JP.UTF-8";
             LC_TELEPHONE = "ja_JP.UTF-8";
@@ -203,26 +203,40 @@
             cosmic-greeter.enable = false;
         };
         # Enable touchpad support (enabled default in most desktopManager).
-        #libinput.enable = true;
+        libinput.enable = true;
         desktopManager = {
             cosmic.enable = true;
             plasma6.enable = true;
         };
         #dockerRegistry.enable = true;
+        asus-numberpad-driver = {
+            enable = true;
+            layout = "gx551";
+            wayland = true;
+            runtimeDir = "/run/user/1000/";
+            waylandDisplay = "wayland-0";
+            ignoreWaylandDisplayEnv = false;
+            config = {
+                # e.g. "activation_time" = "0.5";
+                # More Configuration Options
+            };
+        };
     };
 
     # Enable supergfxd power daemon
-    #systemd.services.supergfxd.path = [ pkgs.pciutils ];
-    #systemd.services.supergfxd.enable = true;
-    #services = {
-    #    #power-profiles-daemon.enable = true;
-    #    #supergfxd.enable = true;
-    #    #asusd = {
-    #    #    enable = true;
-    #    #    enableUserService = true;
-    #    #    package = pkgs.asusctl;
-    #    #};
-    #};
+    systemd.services.supergfxd = {
+        enable = true;
+        path = [ pkgs.pciutils ];
+    };
+    services = {
+        power-profiles-daemon.enable = true;
+        supergfxd.enable = true;
+        asusd = {
+            enable = true;
+            enableUserService = true;
+            package = pkgs.asusctl;
+        };
+    };
 
     # Configure console keymap
     console.useXkbConfig = true;
@@ -309,7 +323,7 @@
 
     virtualisation.docker = {
         enable = true;
-        enableOnBoot = true;
+        enableOnBoot = false;
         storageDriver = "btrfs";
         rootless = {
             enable = true;
@@ -406,6 +420,10 @@
         virt-manager = {
             enable = true;
         };
+        niri = {
+            enable = true;
+            package = pkgs.niri-unstable;
+        };
     };
 
     #packageGroups = import ../package-groups.nix { inherit pkgs; };
@@ -451,20 +469,21 @@
             R
             #(inputs.nixpkgs-zig.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zig_0_14)
             #pkgs.zigpkgs.master
+            cachix
             go
             openjdk
             openjdk8
-            openjdk21
             openjdk23
-            (with dotnetCorePackages; combinePackages [
-                sdk_10_0
-                sdk_9_0
-                sdk_8_0
-                aspnetcore_10_0
-                aspnetcore_9_0
-                aspnetcore_8_0
-            ])
-            dotnetPackages.Nuget
+            openjdk24
+            #(with dotnetCorePackages; combinePackages [
+            #    sdk_10_0
+            #    sdk_9_0
+            #    sdk_8_0
+            #    aspnetcore_10_0
+            #    aspnetcore_9_0
+            #    aspnetcore_8_0
+            #])
+            #dotnetPackages.Nuget
             nodePackages_latest.nodejs
             typescript
             # dependencies
@@ -489,28 +508,11 @@
             libva.dev
             # other apps
             ncspot
-            kdePackages.kate
-            jetbrains.clion
-            jetbrains.rider
-            #(jetbrains.rider.overrideAttrs (attrs: {
-            #    postInstall = (attrs.postInstall or "") + lib.optionalString (stdenv.hostPlatform.isLinux) ''
-            #        (
-            #          cd $out/rider
-            #          ls -d $PWD/plugins/cidr-debugger-plugin/bin/lldb/linux/*/lib/python3.8/lib-dynload/* |
-            #          xargs patchelf \
-            #            --replace-needed libssl.so.10 libssl.so \
-            #            --replace-needed libcrypto.so.10 libcrypto.so \
-            #            --replace-needed libcrypt.so.1 libcrypt.so
-            #          for dir in lib/ReSharperHost/linux-*; do
-            #            rm -rf $dir/dotnet
-            #            ln -s ${dotnetCorePackages.sdk_9_0.unwrapped}/share/dotnet $dir/dotnet 
-            #          done
-            #        )
-            #    '';
-            #}))
-            jetbrains.writerside
-            jetbrains.rust-rover
-            jetbrains.idea-ultimate
+            stable.jetbrains.clion
+            stable.jetbrains.rider
+            stable.jetbrains.writerside
+            stable.jetbrains.rust-rover
+            stable.jetbrains.idea-ultimate
             jetbrains-toolbox
             (vscode-with-extensions.override {
                 vscodeExtensions = with vscode-extensions; [
@@ -527,14 +529,16 @@
                 ];
             })
             lutris
-            unityhub
-            godot.godot_4-mono
+            #unityhub
+            godotPackages_4.godot-mono
             gparted
             ffmpeg_7
+            xwayland-satellite
             gnumake
             cmake
             opencv
             htop
+            btop
             # native wayland support (unstable)
             wineWowPackages.waylandFull
             # winetricks (all versions)
@@ -558,8 +562,6 @@
             spotify
             nasm
             lf
-            #slic3r
-            btop
             prismlauncher
             (python313.withPackages(ps: with ps; [
                 pip
@@ -571,15 +573,12 @@
             vlc
             mpv
             inputs.firefox-nightly.packages.${pkgs.system}.firefox-nightly-bin
-            #firefox-devedition
-            librewolf
-            ladybird
+            librewolf-wayland
+            #ladybird
             trilium-desktop
             heroic
             rpcs3
             osu-lazer-bin
-            #protonvpn-gui
-            #protonvpn-cli
             #virtual manager
             qemu
             qemu-utils
@@ -598,6 +597,7 @@
             bluez-tools
             #gtk4
             #gtk4-layer-shell
+            kdePackages.kate
             kdePackages.dolphin
             kdePackages.ark
             kdePackages.ktorrent
@@ -628,7 +628,6 @@
             #stable.cura
             #kicad
             steamtinkerlaunch
-            stable.calibre
             vesktop
             mangohud
             polychromatic
@@ -637,7 +636,13 @@
             wireshark
             android-tools
 
+            protonup-qt
+            protonup-rs
             qpwgraph
+            kew
+            #teams
+            dbgate
+            swww
         ];
     };
 
@@ -670,18 +675,18 @@
     };
 
     # Enable the OpenSSH daemon.
-    services.openssh = {
-        enable = false;
-        ports = [ 22 ];
-        allowSFTP = false;
-        sftpServerExecutable = "internal-sftp";
-    };
+    #services.openssh = {
+    #    enable = false;
+    #    ports = [ 22 ];
+    #    allowSFTP = false;
+    #    sftpServerExecutable = "internal-sftp";
+    #};
 
     # Or disable the firewall altogether.
     networking.firewall.enable = true;
     # Open ports in the firewall.
-    networking.firewall.allowedTCPPorts = [ 25565 9000 80 21 22 20 ];
-    networking.firewall.allowedUDPPorts = [ 25565 9000 ];
+    #networking.firewall.allowedTCPPorts = [ 25565 9000 80 21 22 20 ];
+    #networking.firewall.allowedUDPPorts = [ 25565 9000 ];
     
     services.vsftpd = {
         enable = true;
