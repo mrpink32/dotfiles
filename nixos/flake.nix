@@ -10,13 +10,14 @@
             url = "github:NixOS/nixpkgs/nixpkgs-unstable";
         };
         nixpkgs-stable = {
-            url = "github:NixOS/nixpkgs/nixos-25.05";
+            url = "github:NixOS/nixpkgs/nixos-25.11";
         };
         hyprland = {
             url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
         };
         nixvim = {
             url = "github:nix-community/nixvim/main";
+            inputs.nixpkgs.follows = "nixpkgs";
         };
         #zig.url = "github:mitchellh/zig-overlay";
         zls = {
@@ -32,13 +33,13 @@
         #    url = "https://git.lix.systems/lix-project/nixos-module/archive/2.91.0.tar.gz";
         #    inputs.nixpkgs.follows = "nixpkgs";
         #};
-        asus-numberpad-driver = {
-            url = "github:asus-linux-drivers/asus-numberpad-driver";
-            inputs.nixpkgs.follows = "nixpkgs";
-        };
+        #asus-numberpad-driver = {
+        #    url = "github:asus-linux-drivers/asus-numberpad-driver";
+        #    #inputs.nixpkgs.follows = "nixpkgs";
+        #};
     };
 
-    outputs = {nixpkgs,nixpkgs-stable,nixpkgs-unstable,asus-numberpad-driver,niri,...} @ inputs:
+    outputs = {nixpkgs,nixpkgs-stable,nixpkgs-unstable,niri,...} @ inputs:
         let
             system = "x86_64-linux";
             overlay-stable = final: prev: {
@@ -84,8 +85,9 @@
                         overlay-stable
                         inputs.niri.overlays.niri
                     ]; })
+                    #asus-numberpad-driver.nixosModules.default
+                    niri.nixosModules.niri
                     ./configuration.nix
-                    asus-numberpad-driver.nixosModules.default
                 ];
             };
             #nixosConfigurations.container = nixpkgs.lib.nixosSystem {

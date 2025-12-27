@@ -22,7 +22,7 @@
             enable = true;
             sysctl = {
                 "vm.max_map_count" = 2147483642;
-                "vm.swappiness" = 10;
+                "vm.swappiness" = 8;
             };
             features = {
                 debug = true;
@@ -44,7 +44,6 @@
     hardware = {
         enableAllFirmware = true;
         enableRedistributableFirmware = true;
-        cpu.amd.updateMicrocode = true;
 
         # ----- openrazer options -----
         openrazer.enable = false;
@@ -140,14 +139,22 @@
 
     # ----- Networking -----
     networking = {
-        networkmanager.enable = true;
         hostName = "nixos"; # Define your hostname.
+        networkmanager = {
+            enable = true;
+            plugins = [
+                pkgs.networkmanager-openvpn
+            ];
+        };
         # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+        
 
         # Configure network proxy if necessary
         # networking.proxy.default = "http://user:password@proxy:port/";
         # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
     };
+
+    #programs.openvpn3.enable = true;
 
     # Set your time zone.
     time.timeZone = "Europe/Copenhagen";
@@ -160,7 +167,7 @@
             LC_IDENTIFICATION = "ja_JP.UTF-8";
             LC_MEASUREMENT = "ja_JP.UTF-8";
             LC_MONETARY = "ja_JP.UTF-8";
-            LC_NAME = "en_US.UTF-8";
+            LC_NAME = "ja_JP.UTF-8";
             LC_NUMERIC = "ja_JP.UTF-8";
             LC_PAPER = "ja_JP.UTF-8";
             LC_TELEPHONE = "ja_JP.UTF-8";
@@ -171,7 +178,10 @@
             type = "fcitx5";
             fcitx5 = {
                 waylandFrontend = true;
-                addons = with pkgs; [ fcitx5-mozc ];
+                addons = with pkgs; [
+                    fcitx5-mozc
+                    fcitx5-hangul
+                ];
             };
         };
     };
@@ -194,10 +204,10 @@
         };
         displayManager = {
             enable = true;
-            defaultSession = "cosmic";
-            ly.enable = true;
+            defaultSession = "niri";
+            ly.enable = false;
             sddm = {
-                enable = false;
+                enable = true;
                 wayland.enable = true;
             };
             cosmic-greeter.enable = false;
@@ -206,22 +216,26 @@
         libinput.enable = true;
         desktopManager = {
             cosmic.enable = true;
-            plasma6.enable = true;
+            plasma6.enable = false;
+            gnome.enable = false;
         };
         #dockerRegistry.enable = true;
-        asus-numberpad-driver = {
-            enable = true;
-            layout = "gx551";
-            wayland = true;
-            runtimeDir = "/run/user/1000/";
-            waylandDisplay = "wayland-0";
-            ignoreWaylandDisplayEnv = false;
-            config = {
-                # e.g. "activation_time" = "0.5";
-                # More Configuration Options
-            };
-        };
+        #asus-numberpad-driver = {
+        #    enable = true;
+        #    layout = "gx551";
+        #    wayland = true;
+        #    runtimeDir = "/run/user/1000/";
+        #    waylandDisplay = "wayland-0";
+        #    ignoreWaylandDisplayEnv = false;
+        #    config = {
+        #        # e.g. "activation_time" = "0.5";
+        #        # More Configuration Options
+        #    };
+        #};
     };
+
+    #security.pam.services.login.enableGnomeKeyring = true;
+    #services.gnome.gnome-keyring.enable = true;
 
     # Enable supergfxd power daemon
     systemd.services.supergfxd = {
@@ -275,6 +289,9 @@
     nixpkgs.config = {
         allowUnfree = true;
         allowBroken = false;
+        permittedInsecurePackages = [
+            "dotnet-sdk-6.0.428"
+        ];
     };
 
     nix = {
@@ -284,7 +301,7 @@
         # add some flake inputs to the nix-registry for nix search
         registry = {
             nixpkgs.flake = inputs.nixpkgs;
-	        hyprland.flake = inputs.hyprland;
+            hyprland.flake = inputs.hyprland;
             nixpkgs-stable.flake = inputs.nixpkgs-stable;
             nixpkgs-unstable.flake = inputs.nixpkgs-unstable;
             #nixpkgs-zig.flake = inputs.nixpkgs-zig;
@@ -332,14 +349,27 @@
     };
 
     # Extra xdg portals
-    xdg.portal = {
-        enable = true;
-        extraPortals = [
-            pkgs.xdg-utils
-            pkgs.xdg-dbus-proxy
-            #pkgs.xdg-desktop-portal-cosmic
-            pkgs.kdePackages.xdg-desktop-portal-kde
-        ];
+    xdg = {
+        #sounds.enable = true;
+        #mime = {
+        #    enable = true;
+        #    #defaultApplications = { "application/pdf" = "firefox.desktop"; "image/png" = «thunk»; };
+        #};
+        #menus.enable = true;
+        #icons.enable = true;
+        portal = {
+            enable = true;
+            xdgOpenUsePortal = true;
+            #wlr.enable = true;
+            extraPortals = [
+                pkgs.xdg-utils
+                #pkgs.xdg-dbus-proxy
+                pkgs.xdg-desktop-portal-gtk
+                pkgs.xdg-desktop-portal-gnome
+                pkgs.xdg-desktop-portal-cosmic
+                #pkgs.kdePackages.xdg-desktop-portal-kde
+            ];
+        };
     };
 
     programs = {
@@ -383,13 +413,13 @@
             ];
         };
         uwsm.enable = false;
-        hyprland = {
-            enable = true;
-            package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.system}.hyprland;
-            portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-            withUWSM = false;
-            xwayland.enable = true;
-        };
+        #hyprland = {
+        #    enable = false;
+        #    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland.override{ debug = true; }; #inputs.hyprland.packages.${pkgs.system}.hyprland;
+        #    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+        #    withUWSM = false;
+        #    xwayland.enable = true;
+        #};
         hyprlock = {
             enable = false;
             #package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprlock;
@@ -401,7 +431,11 @@
             gamescopeSession.enable = true;
             remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
             dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-            fontPackages = with pkgs; [ source-han-sans ];
+            localNetworkGameTransfers.openFirewall = true;
+            fontPackages = with pkgs; [
+                source-han-sans
+                wqy_zenhei
+            ];
             extraPackages = with pkgs; [
                 gamescope
             ];
@@ -424,10 +458,25 @@
             enable = true;
             package = pkgs.niri-unstable;
         };
+        zoxide = {
+            enable = true;
+            enableZshIntegration = true;
+            enableBashIntegration = true;
+        };
     };
 
     #packageGroups = import ../package-groups.nix { inherit pkgs; };
     #environment.systemPackages = with packageGroups; [ desktop dev utils ];
+    #jetbrains = import ./jetbrains.nix { inherit pkgs; };
+    #jetbrainPackages = with pkgs; [
+    #    jetbrains.clion
+    #    jetbrains.rider
+    #    jetbrains.writerside
+    #    jetbrains.rust-rover
+    #    jetbrains.idea-ultimate
+    #    jetbrains.datagrip
+    #];
+
 
     # List packages installed in system profile. To search, run:
     environment = {
@@ -437,7 +486,6 @@
             kdePackages.oxygen
         ];
         systemPackages = with pkgs; [ 
-            microcode-amd
             vim
             alacritty
             kitty
@@ -450,19 +498,17 @@
 	        inetutils
             flac
             fastfetch
-            neovim-unwrapped
             bc
             file
             bat
             anki
-            zoxide
             mercurial
-            llvmPackages_19.clang
-            llvmPackages_19.clang-tools
-            llvmPackages_19.lld
-            llvmPackages_19.lldb
-            llvmPackages_19.llvm
-            llvmPackages_19.libclang
+            #llvmPackages_git.clang
+            #llvmPackages_git.clang-tools
+            #llvmPackages_git.lld
+            #llvmPackages_git.lldb
+            #llvmPackages_git.llvm
+            #llvmPackages_git.libclang
             cargo
             rustc
             pandoc
@@ -473,17 +519,18 @@
             go
             openjdk
             openjdk8
-            openjdk23
-            openjdk24
-            #(with dotnetCorePackages; combinePackages [
-            #    sdk_10_0
-            #    sdk_9_0
-            #    sdk_8_0
-            #    aspnetcore_10_0
-            #    aspnetcore_9_0
-            #    aspnetcore_8_0
-            #])
-            #dotnetPackages.Nuget
+            openjdk25
+            (with dotnetCorePackages; combinePackages [
+                sdk_10_0
+                sdk_9_0
+                sdk_8_0
+                sdk_6_0
+                aspnetcore_10_0
+                aspnetcore_9_0
+                aspnetcore_8_0
+            ])
+            dotnetPackages.Nuget
+            #azure-cli
             nodePackages_latest.nodejs
             typescript
             # dependencies
@@ -506,13 +553,16 @@
             supergfxctl
             tree-sitter
             libva.dev
+            lazysql
             # other apps
             ncspot
-            stable.jetbrains.clion
-            stable.jetbrains.rider
-            stable.jetbrains.writerside
-            stable.jetbrains.rust-rover
-            stable.jetbrains.idea-ultimate
+            jetbrains.clion
+            jetbrains.rider
+            #jetbrains.writerside
+            jetbrains.rust-rover
+            #jetbrains.idea-ultimate
+            jetbrains.idea
+            jetbrains.datagrip
             jetbrains-toolbox
             (vscode-with-extensions.override {
                 vscodeExtensions = with vscode-extensions; [
@@ -538,7 +588,9 @@
             cmake
             opencv
             htop
-            btop
+            #btop
+            btop-cuda
+            #btop-rocm
             # native wayland support (unstable)
             wineWowPackages.waylandFull
             # winetricks (all versions)
@@ -547,6 +599,7 @@
             wineWowPackages.staging
             #pkgs.protontricks
             steamcmd
+            steam-tui
             mono
             lua
             zip
@@ -569,15 +622,16 @@
             ]))
             coreutils
             libreoffice
-            onlyoffice-bin
+            onlyoffice-desktopeditors
             vlc
             mpv
             inputs.firefox-nightly.packages.${pkgs.system}.firefox-nightly-bin
-            librewolf-wayland
+            firefox-devedition
+            librewolf
             #ladybird
             trilium-desktop
             heroic
-            rpcs3
+            stable.rpcs3
             osu-lazer-bin
             #virtual manager
             qemu
@@ -585,14 +639,12 @@
             virglrenderer
             OVMFFull
             #other
-            #gimp
             gimp3
             krita
             blender
             drawio
             obs-studio
             lshw
-            steam-tui
             bluez
             bluez-tools
             #gtk4
@@ -604,7 +656,8 @@
             kdePackages.partitionmanager
             kdePackages.spectacle
             kdePackages.kdenlive
-            openhmd
+            kdePackages.kdeconnect-kde
+            #openhmd
             openvr
             brightnessctl
             sixpair
@@ -618,8 +671,6 @@
             playerctl
             hyprpaper
             rofi
-            rofi-wayland
-
             swww
 
             airshipper
@@ -640,9 +691,17 @@
             protonup-rs
             qpwgraph
             kew
-            #teams
             dbgate
-            swww
+            devenv
+            
+            #nvtopPackages.nvidia
+
+            quick-webapps
+            oboete
+
+            easyeffects
+            
+            wireguard-tools           
         ];
     };
 
@@ -667,10 +726,10 @@
         qemu = {
             package = pkgs.qemu_kvm;
             swtpm.enable = true;
-            ovmf = {
-                enable = true;
-                packages = [ pkgs.OVMFFull.fd ];
-            };
+            #ovmf = {
+            #    enable = true;
+            #    packages = [ pkgs.OVMFFull.fd ];
+            #};
         };
     };
 
@@ -685,24 +744,10 @@
     # Or disable the firewall altogether.
     networking.firewall.enable = true;
     # Open ports in the firewall.
+    networking.firewall.allowedTCPPorts = [ 20 ];
     #networking.firewall.allowedTCPPorts = [ 25565 9000 80 21 22 20 ];
     #networking.firewall.allowedUDPPorts = [ 25565 9000 ];
     
-    services.vsftpd = {
-        enable = true;
-        #cannot chroot && write
-        #chrootlocalUser = true;
-        writeEnable = true;
-        localUsers = true;
-        #userlist = [ "martyn" "cam" ];
-        #userlistEnable = true;
-    };
-
-    environment.variables = {
-        EDITOR = "nvim";
-        PATH = [];
-    };
-
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions
     # on your system were taken. It‘s perfectly fine and recommended to leave

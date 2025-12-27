@@ -6,7 +6,7 @@
     programs.nixvim = {
         enable = true;
         enableMan = true;
-        package = pkgs.neovim-unwrapped;
+        #package = pkgs.neovim-unwrapped;
         clipboard = {
             register = "unnamedplus";
             providers.wl-copy = {
@@ -16,7 +16,7 @@
         };
         colorschemes.tokyonight = {
             enable = true;
-            settings.style = "night";
+            settings.style = "day";
         };
         globals.mapleader = " "; # Sets the leader key to space
         opts = {
@@ -80,20 +80,56 @@
                 key = "<C-k>";
                 options.desc = "Signature Documentation";
             }
+            #{
+            #    action = "[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])";
+            #    key = "<leader>s";
+            #    mode = ["n"];
+            #    options.desc = "Search and replace";
+            #}
+            # Harpoon
             {
-                action = "[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])";
-                key = "<leader>s";
-                mode = ["n"];
-                options.desc = "Search and replace";
+                mode = "n";
+                key = "<leader>a";
+                action.__raw = "function() require'harpoon':list():add() end";
+            }
+            {
+                mode = "n";
+                key = "<C-e>";
+                action.__raw = "function() require'harpoon'.ui:toggle_quick_menu(require'harpoon':list()) end";
+            }
+            {
+                mode = "n";
+                key = "<C-1>";
+                action.__raw = "function() require'harpoon':list():select(1) end";
+            }
+            {
+                mode = "n";
+                key = "<C-2>";
+                action.__raw = "function() require'harpoon':list():select(2) end";
+            }
+            {
+                mode = "n";
+                key = "<C-3>";
+                action.__raw = "function() require'harpoon':list():select(3) end";
+            }
+            {
+                mode = "n";
+                key = "<C-4>";
+                action.__raw = "function() require'harpoon':list():select(4) end";
             }
         ];
         plugins = {
             web-devicons.enable = true;
             telescope = {
                 enable = true;
-                extensions.fzf-native = {
-                    enable = true;
-                    settings.fuzzy = true;
+                extensions = {
+                    fzf-native = {
+                        enable = true;
+                        settings.fuzzy = true;
+                    };
+                    undo = {
+                        enable = true;
+                    };
                 };
                 keymaps = {
                     "<leader>/" = {
@@ -140,7 +176,9 @@
                     };
                     "<leader>gr" = {
                         action = "lsp_refrences";
-                        options.desc = "[G]oto [R]efrence";
+                        options = {
+                            desc = "[G]oto [R]efrence";
+                        };
                     };
                     "<leader>fh" = {
                         action = "help_tags";
@@ -175,16 +213,30 @@
             todo-comments.enable = true;
             lualine.enable = true;
             luasnip.enable = true;
+            neotest.enable = true;
             neo-tree = {
                 enable = true;
-                eventHandlers = {
-                    file_opened = "
-                        function(file_path)
-                        --auto close
-                        require('neo-tree.command').execute({action = 'close'})
-                        end
-                    ";
+                settings = {
+                    close_if_last_window = true;
+                    open_files_in_last_window = true;
+                    buffers.follow_current_file = {
+                        enabled = true;
+                        leave_dirs_open = false;
+                    };
+                    filesystem.follow_current_file = {
+                        enabled = true;
+                        leave_dirs_open = false;
+                    };
                 };
+                # TODO: fix neo-tree autoclose
+                #settings = {
+                #    file_opened = "
+                #        function(file_path)
+                #        --auto close
+                #        require('neo-tree.command').execute({action = 'close'})
+                #        end
+                #    ";
+                #};
             };
             which-key.enable = true;
             indent-blankline.enable = true;
@@ -216,73 +268,75 @@
                     ];
                 };
             };
-            lsp = {
-                enable = true;
-                inlayHints = true;
-                servers = {
-                    clangd = {
-                        enable = true;
-                        package = pkgs.llvmPackages_19.clang-tools;
-                        #extraOptions = "-fexperimental-new-constant-interpreter";
-                    };
-                    rust_analyzer = {
-                        enable = true;
-                        package = pkgs.rust-analyzer-unwrapped;
-                        installCargo = false;
-                        installRustc = false;
-                    };
-                    zls = {
-                        enable = true;
-                        package = inputs.zls.packages.${pkgs.system}.zls;
-                    };
-                    nixd.enable = true;
-                    glsl_analyzer = {
-                        enable = true;
-                        autostart = true;
-                    };
-                    #slangd = {
-                    #    enable = true;
-                    #    autostart = true;
-                    #};
-                    #glslls = {
-                    #    enable = true;
-                    #    autostart = true;
-                    #};
-                    #omnisharp = {
-                    #    enable = true;
-                    #    package = pkgs.omnisharp-roslyn;
-                    #};
-                    #csharp_ls = {
-                    #    enable = false;
-                    #    package = pkgs.csharp-ls;
-                    #};
-                    html = {
-                        enable = true;
-                    };
-                    cssls = {
-                        enable = true;
-                    };
-                    htmx = {
-                        enable = true;
-                    };
-                    ts_ls = {
-                        enable = true;
-                        #package = pkgs.nodePackages_latest.typescript-language-server;
-                    };
-                    angularls = {
-                        enable = true;
-                        package = pkgs.angular-language-server;
-                    };
-                    #ols = {
-                    #    enable = true;
-                    #    package = pkgs.ols;
-                    #    autostart = true;
-                    #};
-                };
-            };
+            #lsp = {
+            #    enable = true;
+            #    inlayHints = true;
+            #    servers = {
+            #        clangd = {
+            #            enable = true;
+            #            package = pkgs.llvmPackages_19.clang-tools;
+            #            #extraOptions = "-fexperimental-new-constant-interpreter";
+            #        };
+            #        rust_analyzer = {
+            #            enable = true;
+            #            package = pkgs.rust-analyzer-unwrapped;
+            #            installCargo = false;
+            #            installRustc = false;
+            #        };
+            #        zls = {
+            #            enable = true;
+            #            package = pkgs.zls;#/inputs.zls.packages.${pkgs.system}.zls;
+            #        };
+            #        nixd.enable = true;
+            #        glsl_analyzer = {
+            #            enable = true;
+            #            autostart = true;
+            #        };
+            #        #slangd = {
+            #        #    enable = true;
+            #        #    autostart = true;
+            #        #};
+            #        #glslls = {
+            #        #    enable = true;
+            #        #    autostart = true;
+            #        #};
+            #        omnisharp = {
+            #            enable = true;
+            #            #package = pkgs.omnisharp-roslyn;
+            #        };
+            #        #csharp_ls = {
+            #        #    enable = false;
+            #        #    #package = pkgs.csharp-ls;
+            #        #};
+            #        html = {
+            #            enable = true;
+            #        };
+            #        cssls = {
+            #            enable = true;
+            #        };
+            #        htmx = {
+            #            enable = true;
+            #        };
+            #        ts_ls = {
+            #            enable = true;
+            #            #package = pkgs.nodePackages_latest.typescript-language-server;
+            #        };
+            #        angularls = {
+            #            enable = true;
+            #            #package = pkgs.angular-language-server;
+            #        };
+            #        #ols = {
+            #        #    enable = true;
+            #        #    package = pkgs.ols;
+            #        #    autostart = true;
+            #        #};
+            #    };
+            #};
+            lspconfig.enable = true;
             lint = {
                 enable = true;
             };
+            dotnet.enable = true;
             zig = {
                 enable = true;
                 #package = (inputs.nixpkgs-zig.legacyPackages.${pkgs.stdenv.hostPlatform.system}.zig_0_14);
@@ -291,6 +345,79 @@
             };
             markdown-preview = {
                 enable = true;
+            };
+            harpoon = {
+                enable = true;
+                enableTelescope = true;
+            };
+            gitblame = {
+                enable = true;
+                settings.enabled = true;
+            };
+            undotree.enable = true;
+            #neoclip = {
+            #    enable = true;
+            #    settings = {
+            #    };
+            #};
+            #nix.enable = true;
+        };
+        lsp = {
+            inlayHints.enable = true;
+            servers = {
+                clangd = {
+                    enable = true;
+                    package = pkgs.llvmPackages_19.clang-tools;
+                    #extraOptions = "-fexperimental-new-constant-interpreter";
+                };
+                rust_analyzer = {
+                    enable = true;
+                    #package = pkgs.rust-analyzer-unwrapped;
+                };
+                zls = {
+                    enable = true;
+                    package = pkgs.zls;#/inputs.zls.packages.${pkgs.system}.zls;
+                };
+                nixd.enable = true;
+                glsl_analyzer = {
+                    enable = true;
+                };
+                #slangd = {
+                #    enable = true;
+                #    autostart = true;
+                #};
+                #glslls = {
+                #    enable = true;
+                #    autostart = true;
+                #};
+                roslyn_ls = {
+                    enable = true;
+                };
+                #omnisharp = {
+                #    enable = true;
+                #    #package = pkgs.omnisharp-roslyn;
+                #};
+                #csharp_ls = {
+                #    enable = false;
+                #    #package = pkgs.csharp-ls;
+                #};
+                html = {
+                    enable = true;
+                };
+                cssls = {
+                    enable = true;
+                };
+                htmx = {
+                    enable = true;
+                };
+                ts_ls = {
+                    enable = true;
+                    #package = pkgs.nodePackages_latest.typescript-language-server;
+                };
+                angularls = {
+                    enable = true;
+                    #package = pkgs.angular-language-server;
+                };
             };
         };
     };
