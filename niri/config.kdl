@@ -13,13 +13,13 @@ input {
             // For more information, see xkeyboard-config(7).
 
             // For example:
-            layout "us,dk"
-            variant "dvorak,dvorak"
+            layout "us,dk,dk"
+            variant "dvorak,dvorak,"
             options "caps:backspace,shift:both_capslock,grp:win_space_toggle"
         }
 
         // Enable numlock on startup, omitting this setting disables it.
-        numlock
+        // numlock
     }
 
     // Next sections include libinput settings.
@@ -92,7 +92,7 @@ output "eDP-1" {
     // for the resolution.
     // If the mode is omitted altogether or is invalid, niri will pick one automatically.
     // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    mode "3840x2160@120.030"
+    mode "3840x2160@120.018"
 
     // You can use integer or fractional scale, for example use 1.5 for 150% scale.
     scale 2.0
@@ -111,12 +111,15 @@ output "eDP-1" {
     // If the position is unset or results in an overlap, the output is instead placed
     // automatically.
     position x=0 y=0
+
+    variable-refresh-rate on-demand=false
+
     focus-at-startup
 }
 
 output "DP-1" {
     // Uncomment this line to disable this output.
-    // off
+    off
 
     // Resolution and, optionally, refresh rate of the output.
     // The format is "<width>x<height>" or "<width>x<height>@<refresh rate>".
@@ -336,9 +339,10 @@ layout {
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "dunst"
-spawn-at-startup "xwayland-satellite"
-spawn-at-startup "swww-daemon"
+//spawn-at-startup "xwayland-satellite"
+spawn-at-startup "awww-daemon"
 spawn-at-startup "waybar"
+//spawn-at-startup "wl-gammarelay-rs"
 
 // Uncomment this line to ask the clients to omit their client-side decorations if possible.
 // If the client will specifically ask for CSD, the request will be honored.
@@ -372,13 +376,13 @@ animations {
 
 // Work around WezTerm's initial configure bug
 // by setting an empty default-column-width.
-window-rule {
-    // This regular expression is intentionally made as specific as possible,
-    // since this is the default config, and we want no false positives.
-    // You can get away with just app-id="wezterm" if you want.
-    // match app-id=r#"^org\.wezfurlong\.wezterm$"#
-    // default-column-width {}
-}
+//window-rule {
+//    // This regular expression is intentionally made as specific as possible,
+//    // since this is the default config, and we want no false positives.
+//    // You can get away with just app-id="wezterm" if you want.
+//    // match app-id=r#"^org\.wezfurlong\.wezterm$"#
+//    // default-column-width {}
+//}
 
 // Open the Firefox picture-in-picture player as floating by default.
 window-rule {
@@ -388,25 +392,32 @@ window-rule {
     match app-id=r#"firefox$"# title="^Picture-in-Picture$"
     open-floating true
 }
+window-rule {
+    // This app-id regular expression will work for both:
+    // - host Firefox (app-id is "firefox")
+    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
+    match app-id=r#"firefox-nightly$"# title="^Picture-in-Picture$"
+    open-floating true
+}
 
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
-/-window-rule {
-    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
-    match app-id=r#"^org\.gnome\.World\.Secrets$"#
-
-    block-out-from "screen-capture"
-
-    // Use this instead if you want them visible on third-party screenshot tools.
-    // block-out-from "screencast"
-}
+///-window-rule {
+//    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+//    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+//
+//    block-out-from "screen-capture"
+//
+//    // Use this instead if you want them visible on third-party screenshot tools.
+//    // block-out-from "screencast"
+//}
 
 // Example: enable rounded corners for all windows.
 // (This example rule is commented out with a "/-" in front.)
-/-window-rule {
-    geometry-corner-radius 12
-    clip-to-geometry true
-}
+///-window-rule {
+//    geometry-corner-radius 12
+//    clip-to-geometry true
+//}
 
 binds {
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
@@ -438,6 +449,26 @@ binds {
     XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"; }
     XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+
+    // Media controls
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
+    XF86AudioStop allow-when-locked=true { spawn "playerctl" "stop"; }
+    XF86AudioPause allow-when-locked=true { spawn "playerctl" "pause"; }
+
+    // Asus laptop launch button to play-pause
+    XF86Launch1 allow-when-locked=true { spawn "playerctl" "play-pause"; }
+
+    // Main screen brightness
+    //XF86MonBrightnessUp { spawn "busctl" "--user" "--" "call" "rs.wl-gammarelay" "/" "rs.wl.gammarelay" "UpdateBrightness" "d" "+0.02"; }
+    //XF86MonBrightnessDown { spawn "busctl" "--user" "--" "call" "rs.wl-gammarelay" "/" "rs.wl.gammarelay" "UpdateBrightness" "d" "-0.02"; }
+    //Ctrl+XF86MonBrightnessUp { spawn "busctl" "--user" "--" "call" "rs.wl-gammarelay" "/" "rs.wl.gammarelay" "UpdateTemperature" "n" "+100"; }
+    //Ctrl+XF86MonBrightnessDown { spawn "busctl" "--user" "--" "call" "rs.wl-gammarelay" "/" "rs.wl.gammarelay" "UpdateTemperature" "n" "-100"; }
+    XF86MonBrightnessUp { spawn "brightnessctl" "set" "+5%"; }
+    XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-"; }
+    Ctrl+XF86MonBrightnessUp { spawn "brightnessctl" "set" "+5%" "--device=asus_screenpad"; }
+    Ctrl+XF86MonBrightnessDown { spawn "brightnessctl" "set" "5%-" "--device=asus_screenpad"; }
 
     // Open/close the Overview: a zoomed-out view of workspaces and windows.
     // You can also move the mouse into the top-left hot corner,
@@ -602,6 +633,7 @@ binds {
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+Ctrl+Shift+F { toggle-windowed-fullscreen; }
+    Mod+M { maximize-window-to-edges; }
 
     // Expand the focused column to space not taken up by other fully visible columns.
     // Makes the column "fill the rest of the space".
@@ -665,8 +697,24 @@ binds {
     // Powers off the monitors. To turn them back on, do any input like
     // moving the mouse or pressing any other key.
     Mod+Shift+P { power-off-monitors; }
-    Mod+Z repeat=false { spawn "niri" "msg" "output" "DP-1" "off"; }
-    Mod+Shift+Z repeat=false { spawn "niri" "msg" "output" "DP-1" "on"; }
+
+    //XF86Tools { spawn "/home/repositories/dotfiles/niri/toggle-screenpad.sh"; }
+
+    XF86Tools { spawn-sh "niri msg output DP-1 off && brightnessctl set 0% --device=asus_screenpad"; }
+    Ctrl+XF86Tools { spawn-sh "niri msg output DP-1 on && brightnessctl set 80% --device=asus_screenpad"; }
+    // Mod+Z { spawn-sh "niri msg output DP-1 off && brightnessctl set 0% --device=asus_screenpad"; }
+    // Mod+Shift+Z { spawn-sh "niri msg output DP-1 on && brightnessctl set 100% --device=asus_screenpad"; }
+
+
+    // TODO maybe change resolution too, but probably not worth it
+    // --- Test change between refresh rate for power saving ---
+    //Mod+Shift+6 { spawn "/home/repositories/dotfiles/niri/toggle-refresh-rate.sh"; }
+
+    // Switch laptop panel to 60 Hz for power saving
+    Mod+Shift+6 { spawn-sh "niri msg output eDP-1 mode 3840x2160@60.031 && niri msg output DP-1 mode 3840x1100@48.018"; }
+
+    // Switch laptop panel back to 120 Hz
+    Mod+Shift+7 { spawn-sh "niri msg output eDP-1 mode 3840x2160@120.018 && niri msg output DP-1 mode 3840x1100@60.017"; }
 }
 
 cursor {
@@ -674,6 +722,8 @@ cursor {
 }
 
 environment {
-    DISPLAY ":0"
+    //DISPLAY ":0"
     XDG_SESSION_TYPE "wayland"
+    // GDK_SCALE "1"
+    GDK_DPI_SCALE "0.8"
 }
