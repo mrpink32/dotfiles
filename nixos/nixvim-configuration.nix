@@ -38,7 +38,7 @@
             sidescrolloff = 15;
             signcolumn = "yes";
             updatetime = 120;
-            colorcolumn = "80";
+            colorcolumn = "100";
             winbl = 30;
             mouse = "";
             mousehide = true;
@@ -268,70 +268,6 @@
                     ];
                 };
             };
-            #lsp = {
-            #    enable = true;
-            #    inlayHints = true;
-            #    servers = {
-            #        clangd = {
-            #            enable = true;
-            #            package = pkgs.llvmPackages_19.clang-tools;
-            #            #extraOptions = "-fexperimental-new-constant-interpreter";
-            #        };
-            #        rust_analyzer = {
-            #            enable = true;
-            #            package = pkgs.rust-analyzer-unwrapped;
-            #            installCargo = false;
-            #            installRustc = false;
-            #        };
-            #        zls = {
-            #            enable = true;
-            #            package = pkgs.zls;#/inputs.zls.packages.${pkgs.system}.zls;
-            #        };
-            #        nixd.enable = true;
-            #        glsl_analyzer = {
-            #            enable = true;
-            #            autostart = true;
-            #        };
-            #        #slangd = {
-            #        #    enable = true;
-            #        #    autostart = true;
-            #        #};
-            #        #glslls = {
-            #        #    enable = true;
-            #        #    autostart = true;
-            #        #};
-            #        omnisharp = {
-            #            enable = true;
-            #            #package = pkgs.omnisharp-roslyn;
-            #        };
-            #        #csharp_ls = {
-            #        #    enable = false;
-            #        #    #package = pkgs.csharp-ls;
-            #        #};
-            #        html = {
-            #            enable = true;
-            #        };
-            #        cssls = {
-            #            enable = true;
-            #        };
-            #        htmx = {
-            #            enable = true;
-            #        };
-            #        ts_ls = {
-            #            enable = true;
-            #            #package = pkgs.nodePackages_latest.typescript-language-server;
-            #        };
-            #        angularls = {
-            #            enable = true;
-            #            #package = pkgs.angular-language-server;
-            #        };
-            #        #ols = {
-            #        #    enable = true;
-            #        #    package = pkgs.ols;
-            #        #    autostart = true;
-            #        #};
-            #    };
-            #};
             lspconfig.enable = true;
             lint = {
                 enable = true;
@@ -361,14 +297,29 @@
             #    };
             #};
             #nix.enable = true;
+            typst-preview.enable = true;
+            typst-vim.enable = true;
+            quarto.enable = true;
+            vimtex.enable = true;
+            vim-test.enable = true;
         };
         lsp = {
             inlayHints.enable = true;
             servers = {
+                asm_lsp = {
+                    enable = true;
+                };
                 clangd = {
                     enable = true;
-                    package = pkgs.llvmPackages_19.clang-tools;
-                    #extraOptions = "-fexperimental-new-constant-interpreter";
+                    package = pkgs.llvmPackages_23.clang-tools;
+                    config = {
+                        cmd = [
+                            "clangd"
+                            "--background-index"
+                            #"--query-driver=.*avr-gcc.*"
+                            "--query-driver=**/avr-gcc*,**/avr-g++*"
+                        ];
+                    };
                 };
                 rust_analyzer = {
                     enable = true;
@@ -376,9 +327,13 @@
                 };
                 zls = {
                     enable = true;
-                    package = pkgs.zls;#/inputs.zls.packages.${pkgs.system}.zls;
+                    #package = pkgs.zls;
+                    packageFallback = true;
                 };
                 nixd.enable = true;
+                bashls.enable = true;
+                texlab.enable = true;
+                textlsp.enable = true;
                 glsl_analyzer = {
                     enable = true;
                 };
@@ -418,6 +373,11 @@
                     enable = true;
                     #package = pkgs.angular-language-server;
                 };
+                arduino_language_server = {
+                    enable = true;
+                };
+                tinymist.enable = true;
+                marksman.enable = true;
             };
         };
     };
